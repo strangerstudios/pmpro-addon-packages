@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .1
+Version: .1.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -196,19 +196,39 @@ add_filter("pmpro_has_membership_access_filter", "pmproap_pmpro_has_membership_a
 */
 function pmproap_pmpro_text_filter($text)
 {
-	global $current_user, $post;
+	global $wpdb, $current_user, $post;
 	
 	if(!empty($current_user) && !empty($post))
 	{
 		if(pmproap_isPostLocked($post->ID) && !pmproap_hasAccess($current_user->ID, $post->ID))
 		{
 			$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
-			global $pmpro_currency_symbol;
+			global $pmpro_currency_symbol;						
 			
-			$text .= " This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ".";
-			
-			if(pmpro_hasMembershipLevel())
-				$text .= "<a href=\"" . pmpro_url("checkout", "?level=" . $current_user->membership_level->id . "&ap=" . $post->ID) . "\">Click here to checkout</a>.";
+			//use current level or offer a free level checkout
+			$has_access = pmpro_has_membership_access($post->ID, $current_user->ID, true);			
+			$post_levels = $has_access[1];
+			if(in_array($current_user->membership_level->ID, $post_levels))
+			{
+				$text_level_id = $current_user->membership_level->id;				
+			}
+			else
+			{
+				//find a free level to checkout with
+				foreach($post_levels as $post_level_id)
+				{
+					$post_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $post_level_id . "' LIMIT 1");
+					if(pmpro_isLevelFree($post_level))
+					{
+						$text_level_id = $post_level->id;
+						break;
+					}
+				}
+			}	
+
+			//update text
+			$text = " This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ". ";
+			$text .= "<a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a>.";
 		}
 	}
 	

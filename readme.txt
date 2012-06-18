@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 3.0
-Tested up to: 3.3.2
-Stable tag: .1
+Tested up to: 3.4
+Stable tag: .1.1
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -45,5 +45,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .1.1 =
+* Changed what text is shown when a page is locked.
+* If you don't have a required level, when viewing a locked page, the checkout link will choose a free membership level to switch to if one is available.
+
 = .1 =
 * Initial release.
