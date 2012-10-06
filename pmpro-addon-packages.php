@@ -191,7 +191,7 @@ function pmproap_removeMemberFromPost($user_id, $post_id)
 	//remove the user from the post
 	if(is_array($post_users))
 	{
-		if(($key = array_search($post_users, $user_id)) !== false) 
+		if(($key = array_search($user_id, $post_users)) !== false) 
 		{
 			unset($post_users[$key]);
 		}
