@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .1.1
+Version: .1.2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -161,11 +161,45 @@ function pmproap_isPostLocked($post_id)
 //returns true if a user has access to a page
 function pmproap_hasAccess($user_id, $post_id)
 {
+	//does this user have a level giving them access to everything?
+	$all_access_levels = apply_filters("pmproap_all_access_levels", array(), $user_id, $post_id);	
+	if(!empty($all_access_levels) && pmpro_hasMembershipLevel($all_access_levels, $user_id))
+		return true;	//user has one of the all access levels
+	
+	//check if the user has access to the post
 	$post_users = get_post_meta($post_id, "_pmproap_users", true);
 	if(is_array($post_users) && in_array($user_id, $post_users))
 		return true;
 	else
 		return false;		//unless everyone has access
+}
+
+function pmproap_removeMemberFromPost($user_id, $post_id)
+{
+	$user_posts = get_user_meta($user_id, "_pmproap_posts", true);
+	$post_users = get_post_meta($post_id, "_pmproap_users", true);
+		
+	//remove the post from the user
+	if(is_array($user_posts))
+	{
+		if(($key = array_search($post_id, $user_posts)) !== false) 
+		{
+			unset($user_posts[$key]);
+		}
+	}
+	
+	//remove the user from the post
+	if(is_array($post_users))
+	{
+		if(($key = array_search($post_users, $user_id)) !== false) 
+		{
+			unset($post_users[$key]);
+		}
+	}
+	
+	//save the meta
+	update_user_meta($user_id, "_pmproap_posts", $user_posts);
+	update_post_meta($post_id, "_pmproap_users", $post_users);
 }
 
 /*
@@ -373,3 +407,119 @@ function pmproap_pmpro_member_links_top()
 	}
 }
 add_action("pmpro_member_links_top", "pmproap_pmpro_member_links_top");
+
+/*
+	Show the purchased pages for each user on the edit user/profile page of the admin
+*/
+function pmproap_profile_fields($user_id)
+{
+	if(!current_user_can("administrator"))
+		return false;
+?>
+<h3><?php _e("Purchased Addon Packages", "pmproap"); ?></h3>
+<table class="form-table">
+	<?php
+		$user_posts = get_user_meta($user_id, "_pmproap_posts", true);
+		if(!empty($user_posts))
+		{
+			foreach($user_posts as $upost_id)
+			{
+			?>
+			<tr>
+				<th></th>
+				<td>
+					<?php
+						$upost = get_post($upost_id);
+						?>
+							<span id="pmproap_remove_span_<?php echo $upost->ID;?>">
+							<a target="_blank" href="<?php echo esc_attr(get_permalink($upost->ID));?>"><?php echo $upost->post_title;?></a>
+							&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo $upost->ID;?>" class="pmproap_remove" href="javascript:void(0);">remove</a>
+							</span>
+						<?php												
+					?>
+				</td>
+			</tr>
+			<?php
+			}
+		}
+	?>
+	<tr>
+		<th>Give this User a Package</th>
+		<td>
+			<input type="text" id="new_pmproap_posts_1" name="new_pmproap_posts[]" size="10" value="" /> <small>Enter a post/page ID</small>
+		</td>
+	</tr>
+	<tr id="pmproap_add_tr">
+		<th></th>
+		<td>
+			<a id="pmproap_add" href="javascript:void(0);">+ Add Another</a>
+		</td>
+	</tr>
+</table>
+<input type="hidden" id="remove_pmproap_posts" name="remove_pmproap_posts" value="" />
+<script>
+	var npmproap_adds = 1;
+	jQuery(function() {	
+		//too add another text input for a new package
+		jQuery('#pmproap_add').click(function() {
+			npmproap_adds++;			
+			jQuery('#pmproap_add_tr').before('<tr><th></th><td><input type="text" id="new_pmproap_posts_' + npmproap_adds + '" name="new_pmproap_posts[]" size="10" value="" /> <small>Enter a post/page ID</small></td></tr>');
+		});
+		
+		//removing a package
+		jQuery('.pmproap_remove').click(function() {
+			var thispost = jQuery(this);
+			var thisid = thispost.attr('id').replace('pmproap_remove_', '');
+			
+			//strike through the post
+			jQuery('#pmproap_remove_span_'+thisid).css('text-decoration', 'line-through');
+			
+			//add id to remove list
+			jQuery('#remove_pmproap_posts').val(jQuery('#remove_pmproap_posts').val() + thisid + ',');
+		});
+	});
+</script>
+<?php
+}
+function pmproap_profile_fields_update()
+{	
+	if(isset($_REQUEST['new_pmproap_posts']) || isset($_REQUEST['remove_pmproap_posts']))
+	{
+		//get the user id
+		global $wpdb, $current_user, $user_ID;
+		get_currentuserinfo();
+		
+		if(!empty($_REQUEST['user_id'])) 
+			$user_ID = $_REQUEST['user_id'];
+
+		if(!current_user_can( 'edit_user', $user_ID))
+			return false;				
+		
+		//adding		
+		if(is_array($_REQUEST['new_pmproap_posts']))
+		{
+			foreach($_REQUEST['new_pmproap_posts'] as $post_id)
+			{
+				$post_id = intval($post_id);
+				if(!empty($post_id))
+					pmproap_addMemberToPost($user_ID, $post_id);
+			}
+		}
+				
+		//remove
+		if(!empty($_REQUEST['remove_pmproap_posts']))
+		{
+			//convert to array
+			$post_ids = explode(",", $_REQUEST['remove_pmproap_posts']);
+			foreach($post_ids as $post_id)
+			{
+				$post_id = intval($post_id);
+				if(!empty($post_id))
+					pmproap_removeMemberFromPost($user_ID, $post_id);
+			}
+		}
+	}
+}
+add_action( 'show_user_profile', 'pmproap_profile_fields' );
+add_action( 'edit_user_profile', 'pmproap_profile_fields' );
+add_action( 'profile_update', 'pmproap_profile_fields_update' );
