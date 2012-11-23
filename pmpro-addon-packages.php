@@ -413,6 +413,9 @@ add_action("pmpro_member_links_top", "pmproap_pmpro_member_links_top");
 */
 function pmproap_profile_fields($user_id)
 {
+	if(is_object($user_id))
+		$user_id = $user_id->ID;
+		
 	if(!current_user_can("administrator"))
 		return false;
 ?>

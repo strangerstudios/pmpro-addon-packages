@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: .1.2
+Stable tag: .1.3
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -45,6 +45,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .1.3 =
+* The pmproap_profile_fields function can now take either a user_id or user object. This will fix some bugs.
+
 = .1.2 =
 * Added the pmproap_all_access_levels filter to allow developers to designate certain levels as "all access levels", which will have access to all addon packages without being charged. Some code to use this: https://gist.github.com/3845777
 * Added purchased packages to the edit user/profile page with the ability to add/remove packages.
