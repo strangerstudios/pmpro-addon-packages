@@ -47,6 +47,7 @@ Please Note: This plugin is meant as a temporary solution. Most updates and fixe
 == Changelog ==
 = .1.3 =
 * The pmproap_profile_fields function can now take either a user_id or user object. This will fix some bugs.
+* Using the pmpro_paypal_express_return_url_parameters filter to add the 'ap' param to the PayPal Express return URL to make this plugin more compatible with PayPal Express.
 
 = .1.2 =
 * Added the pmproap_all_access_levels filter to allow developers to designate certain levels as "all access levels", which will have access to all addon packages without being charged. Some code to use this: https://gist.github.com/3845777

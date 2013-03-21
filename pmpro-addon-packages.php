@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .1.2
+Version: .1.3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -270,6 +270,18 @@ function pmproap_pmpro_text_filter($text)
 }
 add_filter("pmpro_non_member_text_filter", "pmproap_pmpro_text_filter");
 add_filter("pmpro_not_logged_in_text_filter", "pmproap_pmpro_text_filter");
+
+/*
+	Add ap to PayPal Express return url parameters
+*/
+function pmproap_pmpro_paypal_express_return_url_parameters($params)
+{
+	if(!empty($_REQUEST['ap']))
+		$params["ap"] = $_REQUEST['ap'];
+	
+	return $params;
+}
+add_filter("pmpro_paypal_express_return_url_parameters", "pmproap_pmpro_paypal_express_return_url_parameters");
 
 /*
 	Tweak the checkout page when ap is passed in.
