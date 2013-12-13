@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: .1.3
+Stable tag: .2
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -45,6 +45,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .2 =
+* Wrapped some functions in if(!function_exists("...")) for PMPro 1.7.5 support.
+
 = .1.3 =
 * The pmproap_profile_fields function can now take either a user_id or user object. This will fix some bugs.
 * Using the pmpro_paypal_express_return_url_parameters filter to add the 'ap' param to the PayPal Express return URL to make this plugin more compatible with PayPal Express.

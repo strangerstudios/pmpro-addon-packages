@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .1.3
+Version: .2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -309,9 +309,12 @@ function pmproap_pmpro_checkout_level($level)
 				$level->trial_limit = 0;
 				
 				//don't unsubscribe to the old level after checkout
-				function pmproap_pmpro_cancel_previous_subscriptions($cancel)
+				if(!function_exists("pmproap_pmpro_cancel_previous_subscriptions"))
 				{
-					return false;
+					function pmproap_pmpro_cancel_previous_subscriptions($cancel)
+					{
+						return false;
+					}
 				}
 				add_filter("pmpro_cancel_previous_subscriptions", "pmproap_pmpro_cancel_previous_subscriptions");
 			}
@@ -325,51 +328,63 @@ function pmproap_pmpro_checkout_level($level)
 			$level->name .= " + access to " . $ap_post->post_title;
 			
 			//don't show the discount code field
-			function pmproap_pmpro_show_discount_code($show)
+			if(!function_exists("pmproap_pmpro_show_discount_code"))
 			{
-				return false;
-			}			
+				function pmproap_pmpro_show_discount_code($show)
+				{
+					return false;
+				}			
+			}
 			add_filter("pmpro_show_discount_code", "pmproap_pmpro_show_discount_code");
 			
 			//add hidden input to carry ap value
-			function pmproap_pmpro_checkout_boxes()
+			if(!function_exists("pmproap_pmpro_checkout_boxes"))
 			{
-				if(!empty($_REQUEST['ap']))
+				function pmproap_pmpro_checkout_boxes()
 				{
-				?>
-					<input type="hidden" name="ap" value="<?php echo esc_attr($_REQUEST['ap']); ?>" />
-				<?php
+					if(!empty($_REQUEST['ap']))
+					{
+					?>
+						<input type="hidden" name="ap" value="<?php echo esc_attr($_REQUEST['ap']); ?>" />
+					<?php
+					}
 				}
 			}
 			add_action("pmpro_checkout_boxes", "pmproap_pmpro_checkout_boxes");
 			
 			//give the user access to the page after checkout
-			function pmproap_pmpro_after_checkout($user_id)
+			if(!function_exists("pmproap_pmpro_after_checkout"))
 			{
-				global $pmproap_ap;
-				if(!empty($_SESSION['ap']))
+				function pmproap_pmpro_after_checkout($user_id)
 				{
-					$pmproap_ap = $_SESSION['ap'];
-					unsset($_SESSION['ap']);
-				}
-				elseif(!empty($_REQUEST['ap']))
-				{
-					$pmproap_ap = $_REQUEST['ap'];
-				}
-				
-				if(!empty($pmproap_ap))
-				{					
-					pmproap_addMemberToPost($user_id, $pmproap_ap);
-					
-					//update the confirmation url
-					function pmproap_pmpro_confirmation_url($url, $user_id, $level)
+					global $pmproap_ap;
+					if(!empty($_SESSION['ap']))
 					{
-						global $pmproap_ap;
-						$url .= "?ap=" . $pmproap_ap;
-					
-						return $url;
+						$pmproap_ap = $_SESSION['ap'];
+						unsset($_SESSION['ap']);
 					}
-					add_filter("pmpro_confirmation_url", "pmproap_pmpro_confirmation_url", 10, 3);
+					elseif(!empty($_REQUEST['ap']))
+					{
+						$pmproap_ap = $_REQUEST['ap'];
+					}
+					
+					if(!empty($pmproap_ap))
+					{					
+						pmproap_addMemberToPost($user_id, $pmproap_ap);
+						
+						//update the confirmation url
+						if(!function_exists("pmproap_pmpro_confirmation_url"))
+						{
+							function pmproap_pmpro_confirmation_url($url, $user_id, $level)
+							{
+								global $pmproap_ap;
+								$url .= "?ap=" . $pmproap_ap;
+							
+								return $url;
+							}
+						}
+						add_filter("pmpro_confirmation_url", "pmproap_pmpro_confirmation_url", 10, 3);
+					}
 				}
 			}
 			add_action("pmpro_after_checkout", "pmproap_pmpro_after_checkout");
