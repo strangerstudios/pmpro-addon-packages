@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .2
+Version: .3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -262,7 +262,7 @@ function pmproap_pmpro_text_filter($text)
 
 			//update text
 			$text = " This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ". ";
-			$text .= "<a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a>.";
+			$text .= "<br /><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a>.";
 		}
 	}
 	
@@ -295,6 +295,7 @@ function pmproap_pmpro_checkout_level($level)
 		$ap = intval($_REQUEST['ap']);
 		$ap_post = get_post($ap);
 		$pmproap_price = get_post_meta($ap, "_pmproap_price", true);
+		
 		if(!empty($pmproap_price))
 		{
 			if(pmpro_hasMembershipLevel($level->id))
@@ -326,7 +327,7 @@ function pmproap_pmpro_checkout_level($level)
 			
 			//update the name
 			if(pmpro_hasMembershipLevel($level->id))
-				$level->name .= $ap_post->post_title;
+				$level->name = $ap_post->post_title;
 			else
 				$level->name .= " + access to " . $ap_post->post_title;
 			
@@ -423,7 +424,7 @@ function pmproap_gettext_you_have_selected($translated_text, $text, $domain)
 {
 	global $pmpro_pages;
 	//only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
-	if(is_page($pmpro_pages['checkout']) && 
+	if(!empty($pmpro_pages) && is_page($pmpro_pages['checkout']) && 
 		!empty($_REQUEST['ap']) && 
 		$domain == "pmpro" && 
 		strpos($text, "have selected") !== false && 
