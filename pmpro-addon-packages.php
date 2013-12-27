@@ -325,7 +325,10 @@ function pmproap_pmpro_checkout_level($level)
 			}
 			
 			//update the name
-			$level->name .= " + access to " . $ap_post->post_title;
+			if(pmpro_hasMembershipLevel($level->id))
+				$level->name .= $ap_post->post_title;
+			else
+				$level->name .= " + access to " . $ap_post->post_title;
 			
 			//don't show the discount code field
 			if(!function_exists("pmproap_pmpro_show_discount_code"))
@@ -398,6 +401,57 @@ function pmproap_pmpro_checkout_level($level)
 	return $level;
 }
 add_filter("pmpro_checkout_level", "pmproap_pmpro_checkout_level");
+
+//remove level description if checking out for level you already have
+function pmproap_pmpro_checkout_level_have_it($level)
+{
+	global $pmpro_pages;
+	//only checkout page, with ap passed in, and have the level checking out for
+	if(is_page($pmpro_pages['checkout']) && 
+		!empty($_REQUEST['ap']) && 
+		pmpro_hasMembershipLevel($level->id))
+	{
+		$level->description = "";
+	}
+
+	return $level;
+}
+add_filter("pmpro_checkout_level", "pmproap_pmpro_checkout_level_have_it");
+
+//remove "membership level" from name if the user already has a level
+function pmproap_gettext_you_have_selected($translated_text, $text, $domain)
+{
+	global $pmpro_pages;
+	//only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
+	if(is_page($pmpro_pages['checkout']) && 
+		!empty($_REQUEST['ap']) && 
+		$domain == "pmpro" && 
+		strpos($text, "have selected") !== false && 
+		pmpro_hasMembershipLevel(intval($_REQUEST['level'])))
+	{
+		$translated_text = str_replace(" membership level", "", $translated_text);
+		$translated_text = str_replace("You have selected the", "You are purchasing additional access to:", $translated_text);
+	}
+	return $translated_text;
+}
+add_filter("gettext", "pmproap_gettext_you_have_selected", 10, 3);
+
+//remove "for membership" from cost text
+function pmproap_pmpro_level_cost_text($text, $level)
+{
+	global $pmpro_pages;
+	//only checkout page, with ap passed in, and have the level checking out for
+	if(is_page($pmpro_pages['checkout']) && 
+		!empty($_REQUEST['ap']) && 
+		pmpro_hasMembershipLevel($level->id))
+	{
+		$text = str_replace("The price for membership", "The price is", $text);
+		$text = str_replace(" now", "", $text);
+	}	
+
+	return $text;
+}
+add_filter("pmpro_level_cost_text", "pmproap_pmpro_level_cost_text", 10, 2);
 
 /*
 	Update the confirmation page to have a link to the purchased page.
