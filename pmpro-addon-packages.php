@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .3
+Version: .3.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -23,6 +23,8 @@ Author URI: http://www.strangerstudios.com
 	* No tax.
 	* No discount codes.
 */
+
+require_once(dirname(__FILE__) . "/shortcodes/pmpro-addon-packages-shortcode.php");
 
 /*
 	add meta box to posts to set price and levels
@@ -261,8 +263,8 @@ function pmproap_pmpro_text_filter($text)
 			}	
 
 			//update text
-			$text = " This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ". ";
-			$text .= "<br /><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a>.";
+			$text = "<p>This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ".</p>";
+			$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a></p>";
 		}
 	}
 	
@@ -382,8 +384,8 @@ function pmproap_pmpro_checkout_level($level)
 							function pmproap_pmpro_confirmation_url($url, $user_id, $level)
 							{
 								global $pmproap_ap;
-								$url .= "?ap=" . $pmproap_ap;
-							
+								$url = add_query_arg("ap", $pmproap_ap, $url);
+															
 								return $url;
 							}
 						}

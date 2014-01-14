@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: .3
+Stable tag: .3.1
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -44,7 +44,10 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
-== Changelog ==
+== Changelog === 
+= .3.1 =
+* Fixed confirmation URL to properly add the ap parameter. The "continue on to ..." link now appears in the membership confirmation. (Thanks, jons7)
+
 = .3 =
 * Updating text a bit for cases where you are checking out for a level you already have to purchase a package.
 
