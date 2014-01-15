@@ -5,7 +5,8 @@
 		// $atts    ::= array of attributes
 		// $content ::= text within enclosing form of shortcode element
 		// $code    ::= the shortcode found, when == callback name
-		// examples: [pmpro_addon_packages show="none" include="subpages"] table of addone packages that are subpages of the page with shortcode and showing no description excerpt
+		// examples: [pmpro_addon_packages show="none" include="subpages"] 
+		// table of addone packages that are subpages of the page with shortcode and showing no description excerpt
 		
 		global $wpdb, $post, $current_user, $pmpro_currency_symbol;
 		
