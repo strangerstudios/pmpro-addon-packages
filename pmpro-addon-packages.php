@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .4
+Version: .4.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -136,6 +136,9 @@ function pmproap_addMemberToPost($user_id, $post_id)
 	//save the meta
 	update_user_meta($user_id, "_pmproap_posts", $user_posts);
 	update_post_meta($post_id, "_pmproap_users", $post_users);
+	
+	//Trigger that user has been added. 
+	do_action('pmproap_action_add_to_package', $user_id, $post_id);	
 }
 
 //returns true if this post is locked to at least one membership level and has a pmproap_price
@@ -202,6 +205,9 @@ function pmproap_removeMemberFromPost($user_id, $post_id)
 	//save the meta
 	update_user_meta($user_id, "_pmproap_posts", $user_posts);
 	update_post_meta($post_id, "_pmproap_users", $post_users);
+	
+	// Trigger that user has been removed. 
+	do_action('pmproap_action_remove_from_package', $user_id, $post_id);
 }
 
 /*
