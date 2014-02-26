@@ -631,7 +631,6 @@ add_action( 'profile_update', 'pmproap_profile_fields_update' );
 function pmproap_add_exp_date( $user_id, $post_id ) {
     if(PMPROAP_EXP_DAYS > 0) {
         $expdate = strtotime('+' . PMPROAP_EXP_DAYS . ' days');
-        fb($expdate);
         update_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date', $expdate);
     }
 }
