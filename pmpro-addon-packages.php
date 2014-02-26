@@ -79,12 +79,14 @@ function pmproap_post_save($post_id)
 		return $post_id;	
 
 	// OK, we're authenticated: we need to find and save the data	
-	if(!empty($_POST['pmproap_price']))
-		$mydata = preg_replace("[^0-9\.]", "", $_POST['pmproap_price']);
-	else
-		$mydata = "";
+    if(!empty($_POST['pmproap_price']))
+        $mydata = preg_replace("[^0-9\.]", "", $_POST['pmproap_price']);
+    else
+        $mydata = "";
 
-	return $mydata;
+    update_post_meta($post_id, "_pmproap_price", $mydata);
+
+    return $mydata;
 }
 
 function pmproap_post_meta_wrapper()
