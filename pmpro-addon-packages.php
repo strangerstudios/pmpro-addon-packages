@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .4.1
+Version: .4.2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -25,6 +25,9 @@ Author URI: http://www.strangerstudios.com
 */
 
 require_once(dirname(__FILE__) . "/shortcodes/pmpro-addon-packages-shortcode.php");
+
+/* Globals */
+define('PMPROAP_EXP_DAYS', 3);  //expires in X days from purchase, 0 never expires
 
 /*
 	add meta box to posts to set price and levels
@@ -79,9 +82,7 @@ function pmproap_post_save($post_id)
 	if(!empty($_POST['pmproap_price']))
 		$mydata = preg_replace("[^0-9\.]", "", $_POST['pmproap_price']);
 	else
-		$mydata = "";	
-
-	update_post_meta($post_id, "_pmproap_price", $mydata);
+		$mydata = "";
 
 	return $mydata;
 }
@@ -170,7 +171,16 @@ function pmproap_hasAccess($user_id, $post_id)
 	$all_access_levels = apply_filters("pmproap_all_access_levels", array(), $user_id, $post_id);	
 	if(!empty($all_access_levels) && pmpro_hasMembershipLevel($all_access_levels, $user_id))
 		return true;	//user has one of the all access levels
-	
+
+    //check for expiration date
+    if (PMPROAP_EXP_DAYS) {
+        if ( strtotime('now') >= get_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date', true) ) {
+            pmproap_removeMemberFromPost($user_id, $post_id);
+            delete_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date');
+            return false;
+        }
+    }
+
 	//check if the user has access to the post
 	$post_users = get_post_meta($post_id, "_pmproap_users", true);
 	if(is_array($post_users) && in_array($user_id, $post_users))
@@ -183,30 +193,30 @@ function pmproap_removeMemberFromPost($user_id, $post_id)
 {
 	$user_posts = get_user_meta($user_id, "_pmproap_posts", true);
 	$post_users = get_post_meta($post_id, "_pmproap_users", true);
-		
+
 	//remove the post from the user
 	if(is_array($user_posts))
 	{
-		if(($key = array_search($post_id, $user_posts)) !== false) 
+		if(($key = array_search($post_id, $user_posts)) !== false)
 		{
 			unset($user_posts[$key]);
 		}
 	}
-	
+
 	//remove the user from the post
 	if(is_array($post_users))
 	{
-		if(($key = array_search($user_id, $post_users)) !== false) 
+		if(($key = array_search($user_id, $post_users)) !== false)
 		{
 			unset($post_users[$key]);
 		}
 	}
-	
+
 	//save the meta
 	update_user_meta($user_id, "_pmproap_posts", $user_posts);
 	update_post_meta($post_id, "_pmproap_users", $post_users);
-	
-	// Trigger that user has been removed. 
+
+	// Trigger that user has been removed.
 	do_action('pmproap_action_remove_from_package', $user_id, $post_id);
 }
 
@@ -217,7 +227,7 @@ function pmproap_pmpro_has_membership_access_filter($hasaccess, $mypost, $myuser
 {
 	//If the user doesn't have access already, we won't change that. So only check if they already have access.
 	if($hasaccess)
-	{	
+	{
 		//is this post locked down via an addon?
 		if(pmproap_isPostLocked($mypost->ID))
 		{
@@ -228,7 +238,7 @@ function pmproap_pmpro_has_membership_access_filter($hasaccess, $mypost, $myuser
 				$hasaccess = false;
 		}
 	}
-	
+
 	return $hasaccess;
 }
 add_filter("pmpro_has_membership_access_filter", "pmproap_pmpro_has_membership_access_filter", 10, 4);
@@ -239,20 +249,20 @@ add_filter("pmpro_has_membership_access_filter", "pmproap_pmpro_has_membership_a
 function pmproap_pmpro_text_filter($text)
 {
 	global $wpdb, $current_user, $post;
-	
+
 	if(!empty($current_user) && !empty($post))
 	{
 		if(pmproap_isPostLocked($post->ID) && !pmproap_hasAccess($current_user->ID, $post->ID))
 		{
 			$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
-			global $pmpro_currency_symbol;						
-			
+			global $pmpro_currency_symbol;
+
 			//use current level or offer a free level checkout
-			$has_access = pmpro_has_membership_access($post->ID, $current_user->ID, true);			
+			$has_access = pmpro_has_membership_access($post->ID, $current_user->ID, true);
 			$post_levels = $has_access[1];
 			if(in_array($current_user->membership_level->ID, $post_levels))
 			{
-				$text_level_id = $current_user->membership_level->id;				
+				$text_level_id = $current_user->membership_level->id;
 			}
 			else
 			{
@@ -266,14 +276,14 @@ function pmproap_pmpro_text_filter($text)
 						break;
 					}
 				}
-			}	
+			}
 
 			//update text
 			$text = "<p>This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ".</p>";
 			$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a></p>";
 		}
 	}
-	
+
 	return $text;
 }
 add_filter("pmpro_non_member_text_filter", "pmproap_pmpro_text_filter");
@@ -286,7 +296,7 @@ function pmproap_pmpro_paypal_express_return_url_parameters($params)
 {
 	if(!empty($_REQUEST['ap']))
 		$params["ap"] = $_REQUEST['ap'];
-	
+
 	return $params;
 }
 add_filter("pmpro_paypal_express_return_url_parameters", "pmproap_pmpro_paypal_express_return_url_parameters");
@@ -296,27 +306,27 @@ add_filter("pmpro_paypal_express_return_url_parameters", "pmproap_pmpro_paypal_e
 */
 //update the level cost
 function pmproap_pmpro_checkout_level($level)
-{	
+{
 	//are we purchasing a post?
 	if(!empty($_REQUEST['ap']))
 	{
 		$ap = intval($_REQUEST['ap']);
 		$ap_post = get_post($ap);
 		$pmproap_price = get_post_meta($ap, "_pmproap_price", true);
-		
+
 		if(!empty($pmproap_price))
 		{
 			if(pmpro_hasMembershipLevel($level->id))
 			{
 				//already have the membership, so price is just the ap price
 				$level->initial_payment = $pmproap_price;
-				
+
 				//zero the rest out
 				$level->billing_amount = 0;
 				$level->cycle_number = 0;
 				$level->trial_amount = 0;
 				$level->trial_limit = 0;
-				
+
 				//don't unsubscribe to the old level after checkout
 				if(!function_exists("pmproap_pmpro_cancel_previous_subscriptions"))
 				{
@@ -332,23 +342,23 @@ function pmproap_pmpro_checkout_level($level)
 				//add the ap price to the membership
 				$level->initial_payment = $level->initial_payment + $pmproap_price;
 			}
-			
+
 			//update the name
 			if(pmpro_hasMembershipLevel($level->id))
 				$level->name = $ap_post->post_title;
 			else
 				$level->name .= " + access to " . $ap_post->post_title;
-			
+
 			//don't show the discount code field
 			if(!function_exists("pmproap_pmpro_show_discount_code"))
 			{
 				function pmproap_pmpro_show_discount_code($show)
 				{
 					return false;
-				}			
+				}
 			}
 			add_filter("pmpro_show_discount_code", "pmproap_pmpro_show_discount_code");
-			
+
 			//add hidden input to carry ap value
 			if(!function_exists("pmproap_pmpro_checkout_boxes"))
 			{
@@ -363,7 +373,7 @@ function pmproap_pmpro_checkout_level($level)
 				}
 			}
 			add_action("pmpro_checkout_boxes", "pmproap_pmpro_checkout_boxes");
-			
+
 			//give the user access to the page after checkout
 			if(!function_exists("pmproap_pmpro_after_checkout"))
 			{
@@ -379,11 +389,11 @@ function pmproap_pmpro_checkout_level($level)
 					{
 						$pmproap_ap = $_REQUEST['ap'];
 					}
-					
+
 					if(!empty($pmproap_ap))
-					{					
+					{
 						pmproap_addMemberToPost($user_id, $pmproap_ap);
-						
+
 						//update the confirmation url
 						if(!function_exists("pmproap_pmpro_confirmation_url"))
 						{
@@ -391,7 +401,7 @@ function pmproap_pmpro_checkout_level($level)
 							{
 								global $pmproap_ap;
 								$url = add_query_arg("ap", $pmproap_ap, $url);
-															
+
 								return $url;
 							}
 						}
@@ -403,7 +413,7 @@ function pmproap_pmpro_checkout_level($level)
 		}
 		else
 		{
-			//woah, they passed a post id that isn't locked down			
+			//woah, they passed a post id that isn't locked down
 		}
 	}
 
@@ -416,8 +426,8 @@ function pmproap_pmpro_checkout_level_have_it($level)
 {
 	global $pmpro_pages;
 	//only checkout page, with ap passed in, and have the level checking out for
-	if(is_page($pmpro_pages['checkout']) && 
-		!empty($_REQUEST['ap']) && 
+	if(is_page($pmpro_pages['checkout']) &&
+		!empty($_REQUEST['ap']) &&
 		pmpro_hasMembershipLevel($level->id))
 	{
 		$level->description = "";
@@ -432,10 +442,10 @@ function pmproap_gettext_you_have_selected($translated_text, $text, $domain)
 {
 	global $pmpro_pages;
 	//only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
-	if(!empty($pmpro_pages) && is_page($pmpro_pages['checkout']) && 
-		!empty($_REQUEST['ap']) && 
-		$domain == "pmpro" && 
-		strpos($text, "have selected") !== false && 
+	if(!empty($pmpro_pages) && is_page($pmpro_pages['checkout']) &&
+		!empty($_REQUEST['ap']) &&
+		$domain == "pmpro" &&
+		strpos($text, "have selected") !== false &&
 		pmpro_hasMembershipLevel(intval($_REQUEST['level'])))
 	{
 		$translated_text = str_replace(" membership level", "", $translated_text);
@@ -450,13 +460,13 @@ function pmproap_pmpro_level_cost_text($text, $level)
 {
 	global $pmpro_pages;
 	//only checkout page, with ap passed in, and have the level checking out for
-	if(is_page($pmpro_pages['checkout']) && 
-		!empty($_REQUEST['ap']) && 
+	if(is_page($pmpro_pages['checkout']) &&
+		!empty($_REQUEST['ap']) &&
 		pmpro_hasMembershipLevel($level->id))
 	{
 		$text = str_replace("The price for membership", "The price is", $text);
 		$text = str_replace(" now", "", $text);
-	}	
+	}
 
 	return $text;
 }
@@ -471,7 +481,7 @@ function pmproap_pmpro_confirmation_message($message)
 	{
 		$ap = $_REQUEST['ap'];
 		$ap_post = get_post($ap);
-		
+
 		$message .= "<p class=\"pmproap_confirmation\">Continue on to <a href=\"" . get_permalink($ap_post->ID) . "\">" . $ap_post->post_title . "</a>.</p>";
 	}
 	return $message;
@@ -505,7 +515,7 @@ function pmproap_profile_fields($user_id)
 {
 	if(is_object($user_id))
 		$user_id = $user_id->ID;
-		
+
 	if(!current_user_can("administrator"))
 		return false;
 ?>
@@ -528,7 +538,7 @@ function pmproap_profile_fields($user_id)
 							<a target="_blank" href="<?php echo esc_attr(get_permalink($upost->ID));?>"><?php echo $upost->post_title;?></a>
 							&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo $upost->ID;?>" class="pmproap_remove" href="javascript:void(0);">remove</a>
 							</span>
-						<?php												
+						<?php
 					?>
 				</td>
 			</tr>
@@ -552,21 +562,21 @@ function pmproap_profile_fields($user_id)
 <input type="hidden" id="remove_pmproap_posts" name="remove_pmproap_posts" value="" />
 <script>
 	var npmproap_adds = 1;
-	jQuery(function() {	
+	jQuery(function() {
 		//too add another text input for a new package
 		jQuery('#pmproap_add').click(function() {
-			npmproap_adds++;			
+			npmproap_adds++;
 			jQuery('#pmproap_add_tr').before('<tr><th></th><td><input type="text" id="new_pmproap_posts_' + npmproap_adds + '" name="new_pmproap_posts[]" size="10" value="" /> <small>Enter a post/page ID</small></td></tr>');
 		});
-		
+
 		//removing a package
 		jQuery('.pmproap_remove').click(function() {
 			var thispost = jQuery(this);
 			var thisid = thispost.attr('id').replace('pmproap_remove_', '');
-			
+
 			//strike through the post
 			jQuery('#pmproap_remove_span_'+thisid).css('text-decoration', 'line-through');
-			
+
 			//add id to remove list
 			jQuery('#remove_pmproap_posts').val(jQuery('#remove_pmproap_posts').val() + thisid + ',');
 		});
@@ -575,20 +585,20 @@ function pmproap_profile_fields($user_id)
 <?php
 }
 function pmproap_profile_fields_update()
-{	
+{
 	if(isset($_REQUEST['new_pmproap_posts']) || isset($_REQUEST['remove_pmproap_posts']))
 	{
 		//get the user id
 		global $wpdb, $current_user, $user_ID;
 		get_currentuserinfo();
-		
-		if(!empty($_REQUEST['user_id'])) 
+
+		if(!empty($_REQUEST['user_id']))
 			$user_ID = $_REQUEST['user_id'];
 
 		if(!current_user_can( 'edit_user', $user_ID))
-			return false;				
-		
-		//adding		
+			return false;
+
+		//adding
 		if(is_array($_REQUEST['new_pmproap_posts']))
 		{
 			foreach($_REQUEST['new_pmproap_posts'] as $post_id)
@@ -598,7 +608,7 @@ function pmproap_profile_fields_update()
 					pmproap_addMemberToPost($user_ID, $post_id);
 			}
 		}
-				
+
 		//remove
 		if(!empty($_REQUEST['remove_pmproap_posts']))
 		{
@@ -616,3 +626,19 @@ function pmproap_profile_fields_update()
 add_action( 'show_user_profile', 'pmproap_profile_fields' );
 add_action( 'edit_user_profile', 'pmproap_profile_fields' );
 add_action( 'profile_update', 'pmproap_profile_fields_update' );
+
+/* Add Expiration Date to User Meta if set above */
+function pmproap_add_exp_date( $user_id, $post_id ) {
+    if(PMPROAP_EXP_DAYS > 0) {
+        $expdate = strtotime('+' . PMPROAP_EXP_DAYS . ' days');
+        fb($expdate);
+        update_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date', $expdate);
+    }
+}
+add_action( 'pmproap_action_add_to_package', 'pmproap_add_exp_date', 10, 2);
+
+function pmproap_remove_exp_date($user_id, $post_id) {
+    if (get_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date'))
+        delete_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date');
+}
+add_action('pmproap_action_remove_from_package', 'pmproap_remove_exp_date', 10, 2);
