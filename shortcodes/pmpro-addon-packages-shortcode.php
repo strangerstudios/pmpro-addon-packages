@@ -44,9 +44,12 @@
 			<tbody>
 			<?php
 				global $more;
-				remove_action('the_content','pmpro_membership_content_filter',5);
+				remove_action('the_content','pmpro_membership_content_filter',5);				
 				while ($query->have_posts() ) : $query->the_post();	
-				$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
+				
+				//price
+				$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);								
+										
 				?>
 				<tr id="pmpro_addon_package-<?php echo $post->ID; ?>" class="pmpro_addon_package">
 					<td class="pmpro_addon_package-title"><?php the_title(); ?><br /><?php echo $post->post_type; ?>
@@ -67,9 +70,11 @@
 						}
 						else
 						{
-							//use current level or offer a free level checkout
+							//get access info and levels with access
 							$has_access = pmpro_has_membership_access($post->ID, $current_user->ID, true);			
 							$post_levels = $has_access[1];
+											
+							$text_level_id = '';
 							if(in_array($current_user->membership_level->ID, $post_levels))
 							{
 								$text_level_id = $current_user->membership_level->id;				
@@ -87,6 +92,10 @@
 									}
 								}
 							}
+							
+							//didn't find a level id to use yet? just use the first one
+							if(empty($text_level_id))
+								$text_level_id = $post_levels[0];													
 							?>
 							<td class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php _e('Buy&nbsp;Now', 'pmpro');?></a></td>
 							<?php
@@ -94,6 +103,7 @@
 					?>
 				</tr> <!-- end pmpro_addon_package-->
 				<?php
+
 				$count++;
 				endwhile;
 				add_action('the_content','pmpro_membership_content_filter',5);
