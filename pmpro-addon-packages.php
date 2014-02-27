@@ -99,7 +99,12 @@ if (is_admin())
 	add_action('admin_menu', 'pmproap_post_meta_wrapper');
 	add_action('save_post', 'pmproap_post_save');
 
-	require_once(ABSPATH . "wp-content/plugins/paid-memberships-pro/adminpages/dashboard.php");
+    if ( !defined( 'WP_CONTENT_DIR' ) )
+    {
+       define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
+    }
+
+	require_once( WP_CONTENT_DIR . '/plugins/paid-memberships-pro/adminpages/dashboard.php' );
 }
 
 /*
