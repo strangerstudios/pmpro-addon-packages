@@ -1,8 +1,8 @@
 === PMPro Addon Packages ===
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
-Requires at least: 3.0
-Tested up to: 3.4
+Requires at least: 3.6
+Tested up to: 3.8.1
 Stable tag: .4.2
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
@@ -48,6 +48,8 @@ Please Note: This plugin is meant as a temporary solution. Most updates and fixe
 
 = .4.2 =
 * Added optional "expires in X days" global
+* Fixed bug in pmpro_addon_packages shortcode.
+* Supporting non-default wp-content directories. (Thanks, Adam-Moss on GitHub)
 
 = .4.1 =
 * Added pmproap_action_add_to_package and pmproap_action_remove_from_package hooks. (Thanks, DanHarrison)
