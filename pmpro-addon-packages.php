@@ -27,7 +27,8 @@ Author URI: http://www.strangerstudios.com
 require_once(dirname(__FILE__) . "/shortcodes/pmpro-addon-packages-shortcode.php");
 
 /* Globals */
-define('PMPROAP_EXP_DAYS', 3);  //expires in X days from purchase, 0 never expires
+//add this to your wp-config.php to set an expiration on addon packages
+//define('PMPROAP_EXP_DAYS', 3);  //expires in X days from purchase, 0 never expires
 
 /*
 	add meta box to posts to set price and levels
@@ -180,7 +181,7 @@ function pmproap_hasAccess($user_id, $post_id)
 		return true;	//user has one of the all access levels
 
     //check for expiration date
-    if (PMPROAP_EXP_DAYS) {
+    if (defined('PMPROAP_EXP_DAYS') && PMPROAP_EXP_DAYS) {
         if ( strtotime('now') >= get_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date', true) ) {
             pmproap_removeMemberFromPost($user_id, $post_id);
             delete_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date');
@@ -636,7 +637,7 @@ add_action( 'profile_update', 'pmproap_profile_fields_update' );
 
 /* Add Expiration Date to User Meta if set above */
 function pmproap_add_exp_date( $user_id, $post_id ) {
-    if(PMPROAP_EXP_DAYS > 0) {
+    if(defined('PMPROAP_EXP_DAYS') && PMPROAP_EXP_DAYS > 0) {
         $expdate = strtotime('+' . PMPROAP_EXP_DAYS . ' days');
         update_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date', $expdate);
     }
