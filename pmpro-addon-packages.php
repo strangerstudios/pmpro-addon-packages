@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .4.2
+Version: .4.3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -258,7 +258,7 @@ function pmproap_pmpro_text_filter($text)
 {
 	global $wpdb, $current_user, $post;
 
-	if(!empty($current_user) && !empty($post))
+	if(!empty($post))
 	{
 		if(pmproap_isPostLocked($post->ID) && !pmproap_hasAccess($current_user->ID, $post->ID))
 		{
@@ -268,7 +268,7 @@ function pmproap_pmpro_text_filter($text)
 			//use current level or offer a free level checkout
 			$has_access = pmpro_has_membership_access($post->ID, $current_user->ID, true);
 			$post_levels = $has_access[1];
-			if(in_array($current_user->membership_level->ID, $post_levels))
+			if(is_user_logged_in() && in_array($current_user->membership_level->ID, $post_levels))
 			{
 				$text_level_id = $current_user->membership_level->id;
 			}
@@ -286,11 +286,29 @@ function pmproap_pmpro_text_filter($text)
 				}
 			}
 
+			//check for all access levels
+			$all_access_levels = apply_filters("pmproap_all_access_levels", array(), $current_user->ID, $post->ID);	
+			
 			//update text
-			$text = "<p>This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ".</p>";
-			$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a></p>";
+			if(!empty($all_access_levels))
+			{
+				$level_names = array();
+				foreach ($all_access_levels as $level_id)
+				{
+					$level = pmpro_getLevel($level_id);
+					$level_names[] = $level->name;
+				}
+				
+				$text = "<p>This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . " or free for our " . pmpro_implodeToEnglish($level_names) . " members.</p>";
+				$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Purchase this Content (" . $pmpro_currency_symbol . $pmproap_price . ")</a> <a href=\"" . pmpro_url("levels") . "\">Choose a Membership Level</a></p>";
+			}
+			else
+			{				
+				$text = "<p>This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ".</p>";
+				$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a></p>";
+			}
 		}
-	}
+	}	
 
 	return $text;
 }
