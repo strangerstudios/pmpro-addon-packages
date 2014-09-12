@@ -3,7 +3,7 @@
 Plugin Name: PMPro Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .4.3
+Version: .4.4
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -497,6 +497,26 @@ function pmproap_pmpro_level_cost_text($text, $level)
 	return $text;
 }
 add_filter("pmpro_level_cost_text", "pmproap_pmpro_level_cost_text", 10, 2);
+
+/*
+	Add info on addon to notes section of order.
+*/
+function pmproap_pmpro_added_order($order)
+{
+	global $pmpro_pages;
+		
+	if(is_page($pmpro_pages['checkout']) &&	!empty($_REQUEST['ap']))
+	{		
+		global $wpdb;
+		$post = get_post(intval($_REQUEST['ap']));
+		$order->notes .= "Addon Package: " . $post->post_title . " (#" . $post->ID . ")\n";
+		$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET notes = '" . esc_sql($order->notes) . "' WHERE id = '" . $order->id . "' LIMIT 1";
+		$wpdb->query($sqlQuery);
+	}
+	
+	return $order;
+}
+add_filter('pmpro_added_order', 'pmproap_pmpro_added_order');
 
 /*
 	Update the confirmation page to have a link to the purchased page.
