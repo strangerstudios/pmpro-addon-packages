@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: PMPro Addon Packages
+Plugin Name: Paid Memberships Pro - Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 Version: .4.4
@@ -687,3 +687,19 @@ function pmproap_remove_exp_date($user_id, $post_id) {
         delete_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date');
 }
 add_action('pmproap_action_remove_from_package', 'pmproap_remove_exp_date', 10, 2);
+
+/*
+Function to add links to the plugin row meta
+*/
+function pmproap_plugin_row_meta($links, $file) {
+	if(strpos($file, 'pmpro-addon-packages.php') !== false)
+	{
+		$new_links = array(
+			'<a href="' . esc_url('http://www.paidmembershipspro.com/add-ons/plugins-on-github/pmpro-series-for-drip-feed-content/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+		);
+		$links = array_merge($links, $new_links);
+	}
+	return $links;
+}
+add_filter('plugin_row_meta', 'pmproap_plugin_row_meta', 10, 2);
