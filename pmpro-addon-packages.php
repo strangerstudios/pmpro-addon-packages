@@ -24,8 +24,15 @@ Author URI: http://www.strangerstudios.com
 	* No discount codes.
 */
 
-require_once(dirname(__FILE__) . "/shortcodes/pmpro-addon-packages-shortcode.php");
-
+$custom_dir = get_stylesheet_directory()."/paid-memberships-pro/pmpro-addon-packages/";
+$custom_file = $custom_dir."pmpro-addon-packages-shortcode.php";
+if(file_exists($custom_file))
+{	
+	require_once($custom_file);	
+}
+else
+	require_once(dirname(__FILE__) . "/shortcodes/pmpro-addon-packages-shortcode.php");
+	
 /* Globals */
 //add this to your wp-config.php to set an expiration on addon packages
 //define('PMPROAP_EXP_DAYS', 3);  //expires in X days from purchase, 0 never expires

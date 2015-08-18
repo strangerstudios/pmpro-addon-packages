@@ -7,10 +7,8 @@ Stable tag: .4.5
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
-You must have the latest version of Paid Memberships Pro installed (currently 1.4.5).
-
-
 == Description ==
+You must have the latest version of Paid Memberships Pro installed (currently 1.8.5).
 
 Story
 * Admin designates a post as an "addon package".
@@ -32,6 +30,22 @@ Limitations
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Edit a post or page to set a price for it.
 
+== Using the Addon Packages Shortcode ==
+The [pmpro_addon_packages] shortcode allows you to display a "shop" like page of available addon packages (all pages and posts with a defined pmproap_price). Add the shortcode to a page with your desired attributes. 
+
+Shortcode attributes include:
+* checkout_button: The text displayed on the button linking to checkout. (default: "Buy Now").
+* exclude: A comma-separated list of the page IDs to exclude from display (default: none).
+* include: Optionally set this attribute to only show subpages of the active page. Accepts: "subpages". (default: shows all pages and posts with an addon package price).
+* layout: The layout of the output. (default: table). Accepts "div", "table", "2col", "3col", "4col" (column-type layouts will work with the Memberlite Theme or any theme based on the Foundation 5 grid system).
+* link: Hyperlink the post/page title to the single view; accepts “true” or “false” (default: true).
+* orderby: Accepts any orderby parameter as defined in the codex. (default: menu_order).
+* order: Accepts ASC or DESC as defined in the codex. (default: ASC).
+* thumbnail: Optionally hide or show the subpage’s featured image; accepts “thumbnail”, “medium”, “large” or “false”. (default: thumbnail).
+* view_button: The text displayed on the button linking to view the single page. (default: "View Now").
+
+If the user has already purchased the addon package, they will see a link to "View". If the user has a valid membership for the addon package, they can purchase without modifying their membership level. If the current user does not have a membership level or is not logged in, they can click the "buy" button to purchase membership and the addon package in one step.
+
 == Frequently Asked Questions ==
 
 = I found a bug in the plugin. =
@@ -45,6 +59,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .5 =
+* FEATURE: Added [pmpro_addon_packages] shortcode which can be used to show a list of all pages marked as addon packages. See the description section above for instructions on how to use.
+
 = .4.5 =
 * If no free level is available for an addon package, the checkout link will now default to the first required level when non-members view the page.
 
