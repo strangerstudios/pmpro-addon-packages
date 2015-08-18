@@ -267,6 +267,8 @@
 				</div> <!-- end #pmpro_addon_packages -->
 				<?php
 			}
+			//Reset Query
+			wp_reset_query();
 		}
 	else
 	{
