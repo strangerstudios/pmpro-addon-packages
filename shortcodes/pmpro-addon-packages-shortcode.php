@@ -8,7 +8,7 @@
 		// examples: [pmpro_addon_packages show="none" include="subpages"] 
 		// table of addone packages that are subpages of the page with shortcode and showing no description excerpt
 		
-		global $wpdb, $post, $current_user, $pmpro_currency_symbol;
+		global $wpdb, $post, $current_user;
 		
 		extract(shortcode_atts(array(
 			'checkout_button' => 'Buy Now',
@@ -125,8 +125,8 @@
 									?>
 									</h3>									
 								</td>
-								<?php 
-									if(pmproap_hasAccess($current_user->ID,$post->ID))
+								<?php
+									if(!empty($current_user->ID) && pmproap_hasAccess($current_user->ID,$post->ID))
 									{
 										?>
 										<td width="25%" class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php echo the_permalink(); ?>"><?php echo $view_button; ?></a></td>
@@ -134,34 +134,13 @@
 									}
 									else
 									{
-										//get access info and levels with access
-										$has_access = pmpro_has_membership_access($post->ID, $current_user->ID, true);			
-										$post_levels = $has_access[1];
-														
-										$text_level_id = '';
-										if(in_array($current_user->membership_level->ID, $post_levels))
-										{
-											$text_level_id = $current_user->membership_level->id;				
-										}
-										else
-										{
-											//find a free level to checkout with
-											foreach($post_levels as $post_level_id)
-											{
-												$post_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $post_level_id . "' LIMIT 1");
-												if(pmpro_isLevelFree($post_level))
-												{
-													$text_level_id = $post_level->id;
-													break;
-												}
-											}
-										}
+										//which level to use for checkout link?
+										$text_level_id = pmproap_getLevelIDForCheckoutLink($post->ID, $current_user->ID);
 										
-										//didn't find a level id to use yet? just use the first one
-										if(empty($text_level_id))
-											$text_level_id = $post_levels[0];													
-										?>
-										<td width="25%" class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo $pmpro_currency_symbol . $pmproap_price; ?></span></a></td>
+										//what's the price
+										$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
+										?>																					
+										<td width="25%" class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice($pmproap_price); ?></span></a></td>
 										<?php
 									}
 								?>
@@ -187,7 +166,7 @@
 									if($layout == '2col')
 										echo '6 ';
 									elseif($layout == '3col')
-										echo '4 ';
+										echo '4 text-center ';
 									elseif($layout == '4col')
 										echo '3 text-center ';
 									else
@@ -223,37 +202,13 @@
 												}
 												else
 												{
-													//get access info and levels with access
-													$has_access = pmpro_has_membership_access($post->ID, NULL, true);
-													$post_levels = $has_access[1];
-
-													if(!empty($current_user->ID))
-													{				
-														$text_level_id = '';
-														if(in_array($current_user->membership_level->ID, $post_levels))
-														{
-															$text_level_id = $current_user->membership_level->id;				
-														}
-														else
-														{
-															//find a free level to checkout with
-															foreach($post_levels as $post_level_id)
-															{
-																$post_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $post_level_id . "' LIMIT 1");
-																if(pmpro_isLevelFree($post_level))
-																{
-																	$text_level_id = $post_level->id;
-																	break;
-																}
-															}
-														}
-													}
-
-													//didn't find a level id to use yet? just use the first one
-													if(empty($text_level_id))
-														$text_level_id = $post_levels[0];													
+													//which level to use for checkout link?
+													$text_level_id = pmproap_getLevelIDForCheckoutLink($post->ID, $current_user->ID);
+													
+													//what's the price
+													$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);														
 													?>
-													<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo $pmpro_currency_symbol . $pmproap_price; ?></span></a></p>
+													<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice($pmproap_price); ?></span></a></p>
 													<?php
 												}
 											?>

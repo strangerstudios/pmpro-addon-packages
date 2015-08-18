@@ -54,7 +54,7 @@ function pmproap_post_meta()
 	<?php if($pmproap_price && empty($pmpro_page_levels[$post->ID])) { ?>
 		<p><strong class="pmpro_red">Warning: This page is not locked down yet.</strong> You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to.</p>
 	<?php } elseif($pmproap_price) { ?>
-		<p><strong class="pmpro_green">This page is restricted.</strong> Members will have to pay <?php echo $pmpro_currency_symbol . $pmproap_price; ?> to gain access to this page. To open access to all members, delete the price below then Save/Update this post.</p>
+		<p><strong class="pmpro_green">This page is restricted.</strong> Members will have to pay <?php echo pmpro_formatPrice($pmproap_price); ?> to gain access to this page. To open access to all members, delete the price below then Save/Update this post.</p>
 	<?php } else { ?>
 		<p>To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.</p>		
 	<?php } ?>
@@ -263,38 +263,17 @@ add_filter("pmpro_has_membership_access_filter", "pmproap_pmpro_has_membership_a
 */
 function pmproap_pmpro_text_filter($text)
 {
-	global $wpdb, $current_user, $post;
+	global $wpdb, $current_user, $post, $pmpro_currency_symbol;
 
 	if(!empty($post))
 	{
 		if(pmproap_isPostLocked($post->ID) && !pmproap_hasAccess($current_user->ID, $post->ID))
 		{
+			//which level to use for checkout link?
+			$text_level_id = pmproap_getLevelIDForCheckoutLink($post->ID, $current_user->ID);
+			
+			//what's the price
 			$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
-			global $pmpro_currency_symbol;
-
-			//use current level or offer a free level checkout
-			$has_access = pmpro_has_membership_access($post->ID, $current_user->ID, true);
-			$post_levels = $has_access[1];
-			if(is_user_logged_in() && in_array($current_user->membership_level->ID, $post_levels))
-			{
-				$text_level_id = $current_user->membership_level->id;
-			}
-			else
-			{
-				//default to the first one
-				$text_level_id = $post_levels[0];
-
-				//find a free level to checkout with
-				foreach($post_levels as $post_level_id)
-				{
-					$post_level = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $post_level_id . "' LIMIT 1");
-					if(pmpro_isLevelFree($post_level))
-					{
-						$text_level_id = $post_level->id;
-						break;
-					}
-				}
-			}
 
 			//check for all access levels
 			$all_access_levels = apply_filters("pmproap_all_access_levels", array(), $current_user->ID, $post->ID);	
@@ -310,11 +289,11 @@ function pmproap_pmpro_text_filter($text)
 				}
 				
 				$text = "<p>This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . " or free for our " . pmpro_implodeToEnglish($level_names) . " members.</p>";
-				$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Purchase this Content (" . $pmpro_currency_symbol . $pmproap_price . ")</a> <a href=\"" . pmpro_url("levels") . "\">Choose a Membership Level</a></p>";
+				$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Purchase this Content (" . pmpro_formatPrice($pmproap_price) . ")</a> <a href=\"" . pmpro_url("levels") . "\">Choose a Membership Level</a></p>";
 			}
 			else
 			{				
-				$text = "<p>This content requires that you purchase additional access. The price is " . $pmpro_currency_symbol . $pmproap_price . ".</p>";
+				$text = "<p>This content requires that you purchase additional access. The price is " . pmpro_formatPrice($pmproap_price) . ".</p>";
 				$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">Click here to checkout</a></p>";
 			}
 		}
@@ -324,6 +303,65 @@ function pmproap_pmpro_text_filter($text)
 }
 add_filter("pmpro_non_member_text_filter", "pmproap_pmpro_text_filter");
 add_filter("pmpro_not_logged_in_text_filter", "pmproap_pmpro_text_filter");
+
+/*
+	Figure out which PMPro level ID to use for the checkout link for an addon page.
+*/
+function pmproap_getLevelIDForCheckoutLink($post_id = NULL, $user_id = NULL)
+{
+	global $current_user, $post;
+	
+	//default to current user
+	if(empty($user_id) && !empty($current_user) && !empty($current_user->ID))
+		$user_id = $current_user->ID;
+		
+	//default to current post
+	if(empty($post_id) && !empty($post) && !empty($post->ID))
+		$post_id = $post->ID;
+
+	//no post, we bail
+	if(empty($post_id))
+		return false;
+	
+	//no user id? make sure it's null
+	if(empty($user_id))
+		$user_id = NULL;		
+
+	//use current level or offer a free level checkout
+	$has_access = pmpro_has_membership_access($post_id, $user_id, true);
+	$post_levels = $has_access[1];
+	
+	//make sure membership_level obj is populated
+	if(is_user_logged_in())
+		$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+	
+	if(!empty($current_user->membership_level) && in_array($current_user->membership_level->ID, $post_levels))
+	{
+		$text_level_id = $current_user->membership_level->id;
+	}
+	else
+	{
+		//default to the first one
+		$text_level_id = $post_levels[0];
+
+		//find a free level to checkout with
+		foreach($post_levels as $post_level_id)
+		{
+			$post_level = pmpro_getLevel($post_level_id);
+			if(pmpro_isLevelFree($post_level))
+			{
+				$text_level_id = $post_level->id;
+				break;
+			}
+		}
+	}
+	
+	//didn't find a level id to use yet? just use the first one
+	if(empty($text_level_id))
+		$text_level_id = $post_levels[0];
+		
+	return $text_level_id;
+}
 
 /*
 	Add ap to PayPal Express return url parameters
