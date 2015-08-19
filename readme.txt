@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: .5
+Stable tag: .5.1
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -59,6 +59,10 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .5.1 =
+* Updated to use the pmpro_formatPrice() function for addon package price display.
+* Fixed bug with notices for non-members and not-logged in users.
+
 = .5 =
 * FEATURE: Added [pmpro_addon_packages] shortcode which can be used to show a list of all pages marked as addon packages. See the description section above for instructions on how to use.
 
