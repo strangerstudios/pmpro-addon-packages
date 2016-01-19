@@ -381,6 +381,11 @@ add_filter("pmpro_paypal_express_return_url_parameters", "pmproap_pmpro_paypal_e
 //update the level cost
 function pmproap_pmpro_checkout_level($level)
 {
+	if (!isset($level->id))
+	{
+		return $level;
+	}
+
 	//are we purchasing a post?
 	if(!empty($_REQUEST['ap']))
 	{
