@@ -139,9 +139,22 @@
 										
 										//what's the price
 										$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
-										?>																					
-										<td width="25%" class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice($pmproap_price); ?></span></a></td>
-										<?php
+
+											?>
+											<td width="25%" class="pmpro_addon_package-buy">
+												<?php
+										if ( !empty( $current_user->ID ) && !pmproap_hasAccess($current_user->ID,$post->ID)) {
+
+											?>
+												<a class="pmpro_btn" href="<?php echo pmpro_url( "checkout", "?level=" . $text_level_id . "&ap=" . $post->ID ); ?>">
+													<?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice( $pmproap_price ); ?></span>
+												</a>
+											<?php
+										} elseif (empty($current_user->ID)) { ?>
+												<button class="pmpro_btn" disabled="disabled"><?php echo $checkout_button; ?>&mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice( $pmproap_price ); ?></span></button><?php
+										} ?>
+											</td><?php
+
 									}
 								?>
 							</tr> <!-- end pmpro_addon_package-->
