@@ -406,6 +406,12 @@ function pmproap_pmpro_checkout_level($level)
 				{
 					function pmproap_pmpro_cancel_previous_subscriptions($cancel)
 					{
+						global $current_user, $pmproap_existing_member_flag, $pmpro_invoice;
+						
+						$pmpro_invoice->total = $pmproap_price;
+						
+						$pmproap_existing_member_flag = array($current_user->membership_level->id, $current_user->membership_level->enddate);
+						
 						return false;
 					}
 				}
@@ -453,7 +459,7 @@ function pmproap_pmpro_checkout_level($level)
 			{
 				function pmproap_pmpro_after_checkout($user_id)
 				{
-					global $pmproap_ap;
+					global $pmproap_ap, $pmproap_existing_member_flag, $wpdb, $current_user;
 					if(!empty($_SESSION['ap']))
 					{
 						$pmproap_ap = $_SESSION['ap'];
@@ -462,6 +468,33 @@ function pmproap_pmpro_checkout_level($level)
 					elseif(!empty($_REQUEST['ap']))
 					{
 						$pmproap_ap = $_REQUEST['ap'];
+					}
+					
+					if(!empty($_REQUEST['level']))
+					{
+						$level_id = $_REQUEST['level'];
+					}
+					
+					if(!empty($pmproap_existing_member_flag))
+					{
+						$last_membership_level_id = $pmproap_existing_member_flag[0];
+						$last_membership_level_enddate = $pmproap_existing_member_flag[1];
+						
+						if($last_membership_level_id == $level_id)
+						{
+							if(empty($last_membership_level_enddate))
+								$last_membership_level_enddate = '';
+							else
+								$last_membership_level_enddate = date('Y-m-d', $last_membership_level_enddate);
+		
+							//remove last row added to members_users table
+							$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $level_id . "' ORDER BY id DESC LIMIT 1";				
+							$wpdb->query($sqlQuery);
+		
+							//activate their old level again
+							$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET status = 'active', enddate = '" . esc_sql($last_membership_level_enddate) . "' WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $last_membership_level_id . "' ORDER BY id DESC LIMIT 1";
+							$wpdb->query($sqlQuery);		
+						}
 					}
 
 					if(!empty($pmproap_ap))
