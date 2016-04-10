@@ -11,7 +11,7 @@
 		global $wpdb, $post, $current_user;
 		
 		extract(shortcode_atts(array(
-			'checkout_button' => 'Buy Now',
+			'checkout_button' => __('Buy Now', 'pmproap'),
 			'exclude' => NULL,
 			'layout' => 'table',
 			'link' => true,
@@ -19,7 +19,7 @@
 			'orderby'	=> 'menu_order',
 			'order'	=>	'ASC',
 			'thumbnail' => 'thumbnail',
-			'view_button' => 'View Now',
+			'view_button' => __('View Now', 'pmproap'),
 		), $atts));					
 		
 		// prep exclude array
