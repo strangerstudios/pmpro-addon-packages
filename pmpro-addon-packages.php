@@ -97,8 +97,14 @@ function pmproap_post_save($post_id)
 
 function pmproap_post_meta_wrapper()
 {
-	add_meta_box('pmproap_post_meta', __('PMPro Addon Package Settings', 'pmproap'), 'pmproap_post_meta', 'page', 'normal');
-	add_meta_box('pmproap_post_meta', __('PMPro Addon Package Settings', 'pmproap'), 'pmproap_post_meta', 'post', 'normal');
+	/**
+	 * @since v0.7 - Supports Custom Post Type (CPT) posts as add-on package/posts
+	 */
+	$post_types = apply_filters('pmproap_supported_post_types', array( 'page', 'post') );
+
+	foreach( $post_types as $type ) {
+		add_meta_box('pmproap_post_meta', __('PMPro Addon Package Settings', 'pmproap'), 'pmproap_post_meta', $type, 'normal');
+	}
 }
 
 if (is_admin()) {
