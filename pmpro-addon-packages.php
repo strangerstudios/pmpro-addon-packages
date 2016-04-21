@@ -99,8 +99,17 @@ function pmproap_post_save($post_id)
 
 function pmproap_post_meta_wrapper()
 {
-	add_meta_box('pmproap_post_meta', __('PMPro Addon Package Settings', 'pmproap'), 'pmproap_post_meta', 'page', 'normal');
-	add_meta_box('pmproap_post_meta', __('PMPro Addon Package Settings', 'pmproap'), 'pmproap_post_meta', 'post', 'normal');
+	// default post types to display
+	$display_post_types = array ('page', 'post');
+
+	// get extra post types from PMPro CPT, if available
+	if(function_exists('pmprocpt_getCPTs')) {
+		$display_post_types = array_merge($display_post_types, pmprocpt_getCPTs());
+	}
+
+	foreach($display_post_types as $display_post_type) {
+		add_meta_box('pmproap_post_meta', 'PMPro Addon Package Settings', 'pmproap_post_meta', $display_post_type, 'normal');
+	}
 }
 if (is_admin())
 {
