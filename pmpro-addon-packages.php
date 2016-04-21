@@ -568,6 +568,17 @@ function pmproap_pmpro_added_order($order)
 }
 add_filter('pmpro_added_order', 'pmproap_pmpro_added_order');
 
+/**
+ * Insert Addon Package column to Orders CSV export.
+ *
+ * @since 0.6
+ */
+function pmproap_pmpro_orders_csv_extra_columns($columns) {
+	$columns['addon_package'] = 'pmproap_csv_addon_package';
+	return $columns;
+}
+add_filter('pmpro_orders_csv_extra_columns', 'pmproap_pmpro_orders_csv_extra_columns');
+
 /*
 	Update the confirmation page to have a link to the purchased page.
 */
@@ -737,6 +748,18 @@ function pmproap_remove_exp_date($user_id, $post_id) {
         delete_user_meta($user_id, 'pmproap_post_id_' . $post_id . '_exp_date');
 }
 add_action('pmproap_action_remove_from_package', 'pmproap_remove_exp_date', 10, 2);
+
+/**
+ * Function to print Addon Package to Orders CSV export.
+ *
+ * @param $order MemberOrder.
+ *
+ * @since 0.5.2
+ */
+function pmproap_csv_addon_package($order) {
+	$ap = preg_match('/Addon Package: (.*\))/', $order->notes, $matches);
+	return $matches[1];
+}
 
 /*
 Function to add links to the plugin row meta
