@@ -432,14 +432,7 @@ function pmproap_pmpro_checkout_level($level)
 				$level->name .= sprintf(__(" + access to %s", "pmproap"), $ap_post->post_title);
 
 			//don't show the discount code field
-			if(!function_exists("pmproap_pmpro_show_discount_code"))
-			{
-				function pmproap_pmpro_show_discount_code($show)
-				{
-					return false;
-				}
-			}
-			add_filter("pmpro_show_discount_code", "pmproap_pmpro_show_discount_code");
+			add_filter("pmpro_show_discount_code", "__return_false");
 
 			//add hidden input to carry ap value
 			if(!function_exists("pmproap_pmpro_checkout_boxes"))
