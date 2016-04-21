@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 3.6
 Tested up to: 4.5
-Stable tag: .6
+Stable tag: .7
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -59,11 +59,14 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .7 =
+* ENHANCEMENT: Added addon package to Orders CSV export.
+* ENHANCEMENT: Added support for custom post types using the PMPro CPT plugin. (Thanks, dwilmer on GitHub)
+* ENHANCEMENT: Added pmproap_supported_post_types filter to add your own post types to be included as potential addon packages.
+
 = .6 =
 * BUG: Avoiding some warnings when a post has an addon price but no required level. (We should show a warning to admins though that it doesn't work unless they set a required level.)
 * ENHANCEMENT: Wrapped strings for translation. Added pmpro.pot/.po/.mo files.
-* ENHANCEMENT: Added addon package to Orders CSV export.
-* ENHANCEMENT: Added support for custom post types using the PMPro CPT plugin. (Thanks, dwilmer on GitHub)
 
 = .5.1 =
 * Updated to use the pmpro_formatPrice() function for addon package price display.
