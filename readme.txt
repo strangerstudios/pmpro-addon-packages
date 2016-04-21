@@ -63,6 +63,7 @@ Please Note: This plugin is meant as a temporary solution. Most updates and fixe
 * BUG: Avoiding some warnings when a post has an addon price but no required level. (We should show a warning to admins though that it doesn't work unless they set a required level.)
 * ENHANCEMENT: Wrapped strings for translation. Added pmpro.pot/.po/.mo files.
 * ENHANCEMENT: Added addon package to Orders CSV export.
+* ENHANCEMENT: Added support for custom post types using the PMPro CPT plugin. (Thanks, dwilmer on GitHub)
 
 = .5.1 =
 * Updated to use the pmpro_formatPrice() function for addon package price display.
