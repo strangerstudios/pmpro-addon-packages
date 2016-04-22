@@ -264,30 +264,35 @@ function pmproap_pmpro_text_filter($text)
         if (pmproap_isPostLocked($post->ID) && !pmproap_hasAccess($current_user->ID, $post->ID)) {
             //which level to use for checkout link?
             $text_level_id = pmproap_getLevelIDForCheckoutLink($post->ID, $current_user->ID);
-
-            //what's the price
-            $pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
-
-			//check for all access levels
-			$all_access_levels = apply_filters("pmproap_all_access_levels", array(), $current_user->ID, $post->ID);	
 			
-			//update text
-			if(!empty($all_access_levels))
-			{
-				$level_names = array();
-				foreach ($all_access_levels as $level_id)
-				{
-					$level = pmpro_getLevel($level_id);
-					$level_names[] = $level->name;
-				}
+			if(empty($text_level_id)) {
+				$text = "<p>" . __("You must first purchase a membership level before purchasing this content. ", "pmproap") . "</p>";
+				$text .= "<p><a href=\"" . pmpro_url("levels") . "\">" . __("Click here to choose a membership level.", "pmproap") . "</a></p>";
+			} else {			
+				//what's the price
+				$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
+
+				//check for all access levels
+				$all_access_levels = apply_filters("pmproap_all_access_levels", array(), $current_user->ID, $post->ID);	
 				
-				$text = "<p>" . __("This content requires that you purchase additional access. The price is %s or free for our %s members.", pmpro_formatPrice($pmproap_price), pmpro_implodeToEnglish($level_names)) . "</p>";
-				$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . sprintf(__("Purchase this Content (%s)", 'pmproap'), pmpro_formatPrice($pmproap_price)) . "</a> <a href=\"" . pmpro_url("levels") . "\">" . __("Choose a Membership Level", "pmproap") . "</a></p>";
-			}
-			else
-			{
-				$text = "<p>" . sprintf(__("This content requires that you purchase additional access. The price is %s.", "pmproap"), pmpro_formatPrice($pmproap_price)) . "</p>";
-				$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . __("Click here to checkout", "pmproap") . "</a></p>";
+				//update text
+				if(!empty($all_access_levels))
+				{
+					$level_names = array();
+					foreach ($all_access_levels as $level_id)
+					{
+						$level = pmpro_getLevel($level_id);
+						$level_names[] = $level->name;
+					}
+					
+					$text = "<p>" . __("This content requires that you purchase additional access. The price is %s or free for our %s members.", pmpro_formatPrice($pmproap_price), pmpro_implodeToEnglish($level_names)) . "</p>";
+					$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . sprintf(__("Purchase this Content (%s)", 'pmproap'), pmpro_formatPrice($pmproap_price)) . "</a> <a href=\"" . pmpro_url("levels") . "\">" . __("Choose a Membership Level", "pmproap") . "</a></p>";
+				}
+				else
+				{
+					$text = "<p>" . sprintf(__("This content requires that you purchase additional access. The price is %s.", "pmproap"), pmpro_formatPrice($pmproap_price)) . "</p>";
+					$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . __("Click here to checkout", "pmproap") . "</a></p>";
+				}
 			}
 		}
 	}	
@@ -338,10 +343,7 @@ function pmproap_getLevelIDForCheckoutLink($post_id = NULL, $user_id = NULL)
 		$text_level_id = $current_user->membership_level->id;
 	}
 	elseif(!empty($post_levels))
-	{
-		//default to the first one
-		$text_level_id = $post_levels[0];
-
+	{		
 		//find a free level to checkout with
 		foreach($post_levels as $post_level_id)
 		{
@@ -354,10 +356,8 @@ function pmproap_getLevelIDForCheckoutLink($post_id = NULL, $user_id = NULL)
 		}
 	}
 	
-	//didn't find a level id to use yet? just use the first one
-	if(empty($text_level_id) && !empty($post_levels))
-		$text_level_id = $post_levels[0];
-	elseif(empty($text_level_id))
+	//didn't find a level id to use yet? return false and user's will be linked to the levels page.
+	if(empty($text_level_id))
 		$text_level_id = false;
 		
 	return $text_level_id;

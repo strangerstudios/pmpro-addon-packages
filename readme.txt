@@ -60,6 +60,7 @@ Please Note: This plugin is meant as a temporary solution. Most updates and fixe
 
 == Changelog ==
 = .7 =
+* ENHANCEMENT/NOTE: No longer defaulting to a paid level if the user does not have a level. Instead users are directed to the levels page to choose a level.
 * ENHANCEMENT: Added addon package to Orders CSV export.
 * ENHANCEMENT: Added support for custom post types using the PMPro CPT plugin. (Thanks, dwilmer on GitHub)
 * ENHANCEMENT: Added pmproap_supported_post_types filter to add your own post types to be included as potential addon packages.

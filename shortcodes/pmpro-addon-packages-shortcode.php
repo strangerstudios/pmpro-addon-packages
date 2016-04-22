@@ -12,6 +12,7 @@
 		
 		extract(shortcode_atts(array(
 			'checkout_button' => __('Buy Now', 'pmproap'),
+			'levels_button' => __('Choose a Level', 'pmproap'),
 			'exclude' => NULL,
 			'layout' => 'table',
 			'link' => true,
@@ -137,28 +138,28 @@
 										//which level to use for checkout link?
 										$text_level_id = pmproap_getLevelIDForCheckoutLink($post->ID, $current_user->ID);
 										
-										//what's the price
-										$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
+										?>
+										<td width="25%" class="pmpro_addon_package-buy">
+										<?php
 
+										if(empty($text_level_id)) {																		
 											?>
-											<td width="25%" class="pmpro_addon_package-buy">
-												<?php
-										if ( !empty( $current_user->ID ) && !pmproap_hasAccess($current_user->ID,$post->ID))
-										{
-
+												<a class="pmpro_btn" href="<?php echo pmpro_url( "levels" ); ?>">
+													<?php echo $levels_button;?>
+												</a>
+											<?php
+										} else {										
+											//what's the price
+											$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
 											?>
 												<a class="pmpro_btn" href="<?php echo pmpro_url( "checkout", "?level=" . $text_level_id . "&ap=" . $post->ID ); ?>">
 													<?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice( $pmproap_price ); ?></span>
 												</a>
 											<?php
 										}
-										elseif (empty($current_user->ID))
-										{
-
-											_e("Unavailable", "pmproap" );
-										} ?>
-											</td><?php
-
+										?>
+										</td>
+										<?php
 									}
 								?>
 							</tr> <!-- end pmpro_addon_package-->
@@ -222,11 +223,17 @@
 													//which level to use for checkout link?
 													$text_level_id = pmproap_getLevelIDForCheckoutLink($post->ID, $current_user->ID);
 													
-													//what's the price
-													$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);														
-													?>
-													<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice($pmproap_price); ?></span></a></p>
-													<?php
+													if(empty($text_level_id)) {																	
+														?>															
+														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("levels"); ?>"><?php echo $levels_button; ?></a></p>
+														<?php
+													} else {													
+														//what's the price
+														$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);														
+														?>
+														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice($pmproap_price); ?></span></a></p>
+														<?php
+													}
 												}
 											?>
 										</div>
