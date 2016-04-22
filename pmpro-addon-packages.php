@@ -752,7 +752,10 @@ add_action('pmproap_action_remove_from_package', 'pmproap_remove_exp_date', 10, 
  */
 function pmproap_csv_addon_package($order) {
 	$ap = preg_match('/Addon Package: (.*\))/', $order->notes, $matches);
-	return $matches[1];
+	if(!empty($ap))
+		return $matches[1];
+	else
+		return "";
 }
 
 /*
