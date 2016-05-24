@@ -40,28 +40,35 @@ if (file_exists($custom_file)) {
 */
 function pmproap_post_meta()
 {
-	global $membership_levels, $post, $wpdb, $pmpro_currency_symbol, $pmpro_page_levels;
-	
-	if(empty($pmpro_page_levels[$post->ID]))
-		$pmpro_page_levels[$post->ID] = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post->ID}'");
-	
-	$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
-?>    
-    <input type="hidden" name="pmproap_noncename" id="pmproap_noncename" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) )?>" />
-	
-	<?php if($pmproap_price && empty($pmpro_page_levels[$post->ID])) { ?>
-		<p><strong class="pmpro_red"><?php _e('Warning: This page is not locked down yet.', 'pmproap');?></strong> <?php _e('You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to.', 'pmproap');?></p>
-	<?php } elseif($pmproap_price) { ?>
-		<p><strong class="pmpro_green"><?php _e('This page is restricted.', 'pmproap');?></strong> <?php printf(__('Members will have to pay %s to gain access to this page. To open access to all members, delete the price below then Save/Update this post.', 'pmproap'), pmpro_formatPrice($pmproap_price));?></p>
-	<?php } else { ?>
-		<p><?php _e('To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.', 'pmproap');?></p>
-	<?php } ?>
+    global $membership_levels, $post, $wpdb, $pmpro_currency_symbol, $pmpro_page_levels;
 
-	<div>
-		<label><strong><?php _e('Price', 'pmproap');?></strong></label>
-		&nbsp;&nbsp;&nbsp; <?php echo $pmpro_currency_symbol; ?><input type="text" id="pmproap_price" name="pmproap_price" value="<?php echo esc_attr($pmproap_price); ?>" />
-	</div>
-<?php
+    if (empty($pmpro_page_levels[$post->ID]))
+        $pmpro_page_levels[$post->ID] = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post->ID}'");
+
+    $pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
+    ?>
+    <input type="hidden" name="pmproap_noncename" id="pmproap_noncename"
+           value="<?php echo wp_create_nonce(plugin_basename(__FILE__)) ?>"/>
+
+    <?php if ($pmproap_price && empty($pmpro_page_levels[$post->ID])) { ?>
+    <p><strong
+            class="pmpro_red"><?php _e('Warning: This page is not locked down yet.', 'pmproap'); ?></strong> <?php _e('You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to.', 'pmproap'); ?>
+    </p>
+<?php } elseif ($pmproap_price) { ?>
+    <p><strong
+            class="pmpro_green"><?php _e('This page is restricted.', 'pmproap'); ?></strong> <?php printf(__('Members will have to pay %s to gain access to this page. To open access to all members, delete the price below then Save/Update this post.', 'pmproap'), pmpro_formatPrice($pmproap_price)); ?>
+    </p>
+<?php } else { ?>
+    <p><?php _e('To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.', 'pmproap'); ?></p>
+<?php } ?>
+
+    <div>
+        <label><strong><?php _e('Price', 'pmproap'); ?></strong></label>
+        &nbsp;&nbsp;&nbsp; <?php echo $pmpro_currency_symbol; ?><input type="text" id="pmproap_price"
+                                                                       name="pmproap_price"
+                                                                       value="<?php echo esc_attr($pmproap_price); ?>"/>
+    </div>
+    <?php
 }
 
 function pmproap_post_save($post_id)
@@ -97,19 +104,19 @@ function pmproap_post_save($post_id)
 
 function pmproap_post_meta_wrapper()
 {
-	/**
-	 * @since v.7 - Supports Custom Post Type (CPT) posts as add-on package/posts
-	 */
-	$post_types = apply_filters('pmproap_supported_post_types', array( 'page', 'post') );
+    /**
+     * @since v.7 - Supports Custom Post Type (CPT) posts as add-on package/posts
+     */
+    $post_types = apply_filters('pmproap_supported_post_types', array('page', 'post'));
 
-	// get extra post types from PMPro CPT, if available
-	if(function_exists('pmprocpt_getCPTs')) {
-		$post_types = array_merge($post_types, pmprocpt_getCPTs());
-	}
-	
-	foreach( $post_types as $type ) {
-		add_meta_box('pmproap_post_meta', __('PMPro Addon Package Settings', 'pmproap'), 'pmproap_post_meta', $type, 'normal');
-	}
+    // get extra post types from PMPro CPT, if available
+    if (function_exists('pmprocpt_getCPTs')) {
+        $post_types = array_merge($post_types, pmprocpt_getCPTs());
+    }
+
+    foreach ($post_types as $type) {
+        add_meta_box('pmproap_post_meta', __('PMPro Addon Package Settings', 'pmproap'), 'pmproap_post_meta', $type, 'normal');
+    }
 }
 
 if (is_admin()) {
@@ -264,38 +271,34 @@ function pmproap_pmpro_text_filter($text)
         if (pmproap_isPostLocked($post->ID) && !pmproap_hasAccess($current_user->ID, $post->ID)) {
             //which level to use for checkout link?
             $text_level_id = pmproap_getLevelIDForCheckoutLink($post->ID, $current_user->ID);
-			
-			if(empty($text_level_id)) {
-				$text = "<p>" . __("You must first purchase a membership level before purchasing this content. ", "pmproap") . "</p>";
-				$text .= "<p><a href=\"" . pmpro_url("levels") . "\">" . __("Click here to choose a membership level.", "pmproap") . "</a></p>";
-			} else {			
-				//what's the price
-				$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
 
-				//check for all access levels
-				$all_access_levels = apply_filters("pmproap_all_access_levels", array(), $current_user->ID, $post->ID);	
-				
-				//update text
-				if(!empty($all_access_levels))
-				{
-					$level_names = array();
-					foreach ($all_access_levels as $level_id)
-					{
-						$level = pmpro_getLevel($level_id);
-						$level_names[] = $level->name;
-					}
-					
-					$text = "<p>" . __("This content requires that you purchase additional access. The price is %s or free for our %s members.", pmpro_formatPrice($pmproap_price), pmpro_implodeToEnglish($level_names)) . "</p>";
-					$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . sprintf(__("Purchase this Content (%s)", 'pmproap'), pmpro_formatPrice($pmproap_price)) . "</a> <a href=\"" . pmpro_url("levels") . "\">" . __("Choose a Membership Level", "pmproap") . "</a></p>";
-				}
-				else
-				{
-					$text = "<p>" . sprintf(__("This content requires that you purchase additional access. The price is %s.", "pmproap"), pmpro_formatPrice($pmproap_price)) . "</p>";
-					$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . __("Click here to checkout", "pmproap") . "</a></p>";
-				}
-			}
-		}
-	}	
+            if (empty($text_level_id)) {
+                $text = "<p>" . __("You must first purchase a membership level before purchasing this content. ", "pmproap") . "</p>";
+                $text .= "<p><a href=\"" . pmpro_url("levels") . "\">" . __("Click here to choose a membership level.", "pmproap") . "</a></p>";
+            } else {
+                //what's the price
+                $pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
+
+                //check for all access levels
+                $all_access_levels = apply_filters("pmproap_all_access_levels", array(), $current_user->ID, $post->ID);
+
+                //update text
+                if (!empty($all_access_levels)) {
+                    $level_names = array();
+                    foreach ($all_access_levels as $level_id) {
+                        $level = pmpro_getLevel($level_id);
+                        $level_names[] = $level->name;
+                    }
+
+                    $text = "<p>" . __("This content requires that you purchase additional access. The price is %s or free for our %s members.", pmpro_formatPrice($pmproap_price), pmpro_implodeToEnglish($level_names)) . "</p>";
+                    $text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . sprintf(__("Purchase this Content (%s)", 'pmproap'), pmpro_formatPrice($pmproap_price)) . "</a> <a href=\"" . pmpro_url("levels") . "\">" . __("Choose a Membership Level", "pmproap") . "</a></p>";
+                } else {
+                    $text = "<p>" . sprintf(__("This content requires that you purchase additional access. The price is %s.", "pmproap"), pmpro_formatPrice($pmproap_price)) . "</p>";
+                    $text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . __("Click here to checkout", "pmproap") . "</a></p>";
+                }
+            }
+        }
+    }
 
     return $text;
 }
@@ -330,37 +333,32 @@ function pmproap_getLevelIDForCheckoutLink($post_id = NULL, $user_id = NULL)
         $user_id = NULL;
     }
 
-	//use current level or offer a free level checkout
-	$has_access = pmpro_has_membership_access($post_id, $user_id, true);
-	$post_levels = $has_access[1];
+    //use current level or offer a free level checkout
+    $has_access = pmpro_has_membership_access($post_id, $user_id, true);
+    $post_levels = $has_access[1];
 
-	//make sure membership_level obj is populated
-	if(is_user_logged_in())
-		$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+    //make sure membership_level obj is populated
+    if (is_user_logged_in())
+        $current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 
-	if(!empty($current_user->membership_level) && in_array($current_user->membership_level->ID, $post_levels))
-	{
-		$text_level_id = $current_user->membership_level->id;
-	}
-	elseif(!empty($post_levels))
-	{		
-		//find a free level to checkout with
-		foreach($post_levels as $post_level_id)
-		{
-			$post_level = pmpro_getLevel($post_level_id);
-			if(pmpro_isLevelFree($post_level))
-			{
-				$text_level_id = $post_level->id;
-				break;
-			}
-		}
-	}
-	
-	//didn't find a level id to use yet? return false and user's will be linked to the levels page.
-	if(empty($text_level_id))
-		$text_level_id = false;
-		
-	return $text_level_id;
+    if (!empty($current_user->membership_level) && in_array($current_user->membership_level->ID, $post_levels)) {
+        $text_level_id = $current_user->membership_level->id;
+    } elseif (!empty($post_levels)) {
+        //find a free level to checkout with
+        foreach ($post_levels as $post_level_id) {
+            $post_level = pmpro_getLevel($post_level_id);
+            if (pmpro_isLevelFree($post_level)) {
+                $text_level_id = $post_level->id;
+                break;
+            }
+        }
+    }
+
+    //didn't find a level id to use yet? return false and user's will be linked to the levels page.
+    if (empty($text_level_id))
+        $text_level_id = false;
+
+    return $text_level_id;
 }
 
 /*
@@ -416,11 +414,11 @@ function pmproap_pmpro_checkout_level($level)
                 $level->initial_payment = $level->initial_payment + $pmproap_price;
             }
 
-			//update the name
-			if(pmpro_hasMembershipLevel($level->id))
-				$level->name = $ap_post->post_title;
-			else
-				$level->name .= sprintf(__(" + access to %s", "pmproap"), $ap_post->post_title);
+            //update the name
+            if (pmpro_hasMembershipLevel($level->id))
+                $level->name = $ap_post->post_title;
+            else
+                $level->name .= sprintf(__(" + access to %s", "pmproap"), $ap_post->post_title);
 
             //don't show the discount code field
             if (!function_exists("pmproap_pmpro_show_discount_code")) {
@@ -504,18 +502,18 @@ add_filter("pmpro_checkout_level", "pmproap_pmpro_checkout_level_have_it");
 //remove "membership level" from name if the user already has a level
 function pmproap_gettext_you_have_selected($translated_text, $text, $domain)
 {
-	global $pmpro_pages;
-	//only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
-	if(!empty($pmpro_pages) && is_page($pmpro_pages['checkout']) &&
-		!empty($_REQUEST['ap']) &&
-		$domain == "pmpro" &&
-		strpos($text, "have selected") !== false &&
-		pmpro_hasMembershipLevel(intval($_REQUEST['level'])))
-	{
-		$translated_text = str_replace(__(" membership level", "pmproap"), "", $translated_text);
-		$translated_text = str_replace(__("You have selected the", "pmproap"), __("You are purchasing additional access to:", "pmproap"), $translated_text);
-	}
-	return $translated_text;
+    global $pmpro_pages;
+    //only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
+    if (!empty($pmpro_pages) && is_page($pmpro_pages['checkout']) &&
+        !empty($_REQUEST['ap']) &&
+        $domain == "pmpro" &&
+        strpos($text, "have selected") !== false &&
+        pmpro_hasMembershipLevel(intval($_REQUEST['level']))
+    ) {
+        $translated_text = str_replace(__(" membership level", "pmproap"), "", $translated_text);
+        $translated_text = str_replace(__("You have selected the", "pmproap"), __("You are purchasing additional access to:", "pmproap"), $translated_text);
+    }
+    return $translated_text;
 }
 
 add_filter("gettext", "pmproap_gettext_you_have_selected", 10, 3);
@@ -523,15 +521,15 @@ add_filter("gettext", "pmproap_gettext_you_have_selected", 10, 3);
 //remove "for membership" from cost text
 function pmproap_pmpro_level_cost_text($text, $level)
 {
-	global $pmpro_pages;
-	//only checkout page, with ap passed in, and have the level checking out for
-	if(is_page($pmpro_pages['checkout']) &&
-		!empty($_REQUEST['ap']) &&
-		pmpro_hasMembershipLevel($level->id))
-	{
-		$text = str_replace(__("The price for membership", "pmproap"), __("The price is", "pmproap"), $text);
-		$text = str_replace(__(" now", "pmproap"), "", $text);
-	}
+    global $pmpro_pages;
+    //only checkout page, with ap passed in, and have the level checking out for
+    if (is_page($pmpro_pages['checkout']) &&
+        !empty($_REQUEST['ap']) &&
+        pmpro_hasMembershipLevel($level->id)
+    ) {
+        $text = str_replace(__("The price for membership", "pmproap"), __("The price is", "pmproap"), $text);
+        $text = str_replace(__(" now", "pmproap"), "", $text);
+    }
 
     return $text;
 }
@@ -567,10 +565,12 @@ add_filter('pmpro_added_order', 'pmproap_pmpro_added_order');
  *
  * @since 0.6
  */
-function pmproap_pmpro_orders_csv_extra_columns($columns) {
-	$columns['addon_package'] = 'pmproap_csv_addon_package';
-	return $columns;
+function pmproap_pmpro_orders_csv_extra_columns($columns)
+{
+    $columns['addon_package'] = 'pmproap_csv_addon_package';
+    return $columns;
 }
+
 add_filter('pmpro_orders_csv_extra_columns', 'pmproap_pmpro_orders_csv_extra_columns');
 
 /*
@@ -582,9 +582,9 @@ function pmproap_pmpro_confirmation_message($message)
         $ap = $_REQUEST['ap'];
         $ap_post = get_post($ap);
 
-		$message .= "<p class=\"pmproap_confirmation\">" . sprintf(__("Continue on to %s.", "pmproap"), "<a href=\"" . get_permalink($ap_post->ID) . "\">" . $ap_post->post_title . "</a>") . "</p>";
-	}
-	return $message;
+        $message .= "<p class=\"pmproap_confirmation\">" . sprintf(__("Continue on to %s.", "pmproap"), "<a href=\"" . get_permalink($ap_post->ID) . "\">" . $ap_post->post_title . "</a>") . "</p>";
+    }
+    return $message;
 }
 
 add_filter("pmpro_confirmation_message", "pmproap_pmpro_confirmation_message");
@@ -616,58 +616,60 @@ function pmproap_profile_fields($user_id)
     if (is_object($user_id))
         $user_id = $user_id->ID;
 
-	if(!current_user_can("administrator"))
-		return false;
-?>
-<h3><?php _e("Purchased Addon Packages", "pmproap"); ?></h3>
-<table class="form-table">
-	<?php
-		$user_posts = get_user_meta($user_id, "_pmproap_posts", true);
-		if(!empty($user_posts))
-		{
-			foreach($user_posts as $upost_id)
-			{
-			?>
-			<tr>
-				<th></th>
-				<td>
-					<?php
-						$upost = get_post($upost_id);
-						?>
-							<span id="pmproap_remove_span_<?php echo $upost->ID;?>">
-							<a target="_blank" href="<?php echo esc_attr(get_permalink($upost->ID));?>"><?php echo $upost->post_title;?></a>
-							&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo $upost->ID;?>" class="pmproap_remove" href="javascript:void(0);"><?php _e('remove', 'pmproap');?></a>
+    if (!current_user_can("administrator"))
+        return false;
+    ?>
+    <h3><?php _e("Purchased Addon Packages", "pmproap"); ?></h3>
+    <table class="form-table">
+        <?php
+        $user_posts = get_user_meta($user_id, "_pmproap_posts", true);
+        if (!empty($user_posts)) {
+            foreach ($user_posts as $upost_id) {
+                ?>
+                <tr>
+                    <th></th>
+                    <td>
+                        <?php
+                        $upost = get_post($upost_id);
+                        ?>
+                        <span id="pmproap_remove_span_<?php echo $upost->ID; ?>">
+							<a target="_blank"
+                               href="<?php echo esc_attr(get_permalink($upost->ID)); ?>"><?php echo $upost->post_title; ?></a>
+							&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo $upost->ID; ?>"
+                                      class="pmproap_remove"
+                                      href="javascript:void(0);"><?php _e('remove', 'pmproap'); ?></a>
 							</span>
-						<?php
-					?>
-				</td>
-			</tr>
-			<?php
-			}
-		}
-	?>
-	<tr>
-		<th><?php _e('Give this User a Package', 'pmproap');?></th>
-		<td>
-			<input type="text" id="new_pmproap_posts_1" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e('Enter a post/page ID', 'pmproap');?></small>
-		</td>
-	</tr>
-	<tr id="pmproap_add_tr">
-		<th></th>
-		<td>
-			<a id="pmproap_add" href="javascript:void(0);"><?php _e('+ Add Another', 'pmproap');?></a>
-		</td>
-	</tr>
-</table>
-<input type="hidden" id="remove_pmproap_posts" name="remove_pmproap_posts" value="" />
-<script>
-	var npmproap_adds = 1;
-	jQuery(function() {
-		//too add another text input for a new package
-		jQuery('#pmproap_add').click(function() {
-			npmproap_adds++;
-			jQuery('#pmproap_add_tr').before('<tr><th></th><td><input type="text" id="new_pmproap_posts_' + npmproap_adds + '" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e('Enter a post/page ID', 'pmproap');?></small></td></tr>');
-		});
+                        <?php
+                        ?>
+                    </td>
+                </tr>
+                <?php
+            }
+        }
+        ?>
+        <tr>
+            <th><?php _e('Give this User a Package', 'pmproap'); ?></th>
+            <td>
+                <input type="text" id="new_pmproap_posts_1" name="new_pmproap_posts[]" size="10" value=""/>
+                <small><?php _e('Enter a post/page ID', 'pmproap'); ?></small>
+            </td>
+        </tr>
+        <tr id="pmproap_add_tr">
+            <th></th>
+            <td>
+                <a id="pmproap_add" href="javascript:void(0);"><?php _e('+ Add Another', 'pmproap'); ?></a>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" id="remove_pmproap_posts" name="remove_pmproap_posts" value=""/>
+    <script>
+        var npmproap_adds = 1;
+        jQuery(function () {
+            //too add another text input for a new package
+            jQuery('#pmproap_add').click(function () {
+                npmproap_adds++;
+                jQuery('#pmproap_add_tr').before('<tr><th></th><td><input type="text" id="new_pmproap_posts_' + npmproap_adds + '" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e('Enter a post/page ID', 'pmproap');?></small></td></tr>');
+            });
 
             //removing a package
             jQuery('.pmproap_remove').click(function () {
@@ -750,26 +752,28 @@ add_action('pmproap_action_remove_from_package', 'pmproap_remove_exp_date', 10, 
  *
  * @since 0.5.2
  */
-function pmproap_csv_addon_package($order) {
-	$ap = preg_match('/Addon Package: (.*\))/', $order->notes, $matches);
-	if(!empty($ap))
-		return $matches[1];
-	else
-		return "";
+function pmproap_csv_addon_package($order)
+{
+    $ap = preg_match('/Addon Package: (.*\))/', $order->notes, $matches);
+    if (!empty($ap))
+        return $matches[1];
+    else
+        return "";
 }
 
 /*
 Function to add links to the plugin row meta
 */
-function pmproap_plugin_row_meta($links, $file) {
-	if(strpos($file, 'pmpro-addon-packages.php') !== false)
-	{
-		$new_links = array(
-			'<a href="' . esc_url('http://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-purchase-access-to-a-single-page/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmproap' ) ) . '">' . __( 'Docs', 'pmproap' ) . '</a>',
-			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmproap' ) ) . '">' . __( 'Support', 'pmproap' ) . '</a>',
-		);
-		$links = array_merge($links, $new_links);
-	}
-	return $links;
+function pmproap_plugin_row_meta($links, $file)
+{
+    if (strpos($file, 'pmpro-addon-packages.php') !== false) {
+        $new_links = array(
+            '<a href="' . esc_url('http://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-purchase-access-to-a-single-page/') . '" title="' . esc_attr(__('View Documentation', 'pmproap')) . '">' . __('Docs', 'pmproap') . '</a>',
+            '<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr(__('Visit Customer Support Forum', 'pmproap')) . '">' . __('Support', 'pmproap') . '</a>',
+        );
+        $links = array_merge($links, $new_links);
+    }
+    return $links;
 }
+
 add_filter('plugin_row_meta', 'pmproap_plugin_row_meta', 10, 2);
