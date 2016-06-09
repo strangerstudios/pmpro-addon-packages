@@ -382,6 +382,8 @@ add_filter("pmpro_paypal_express_return_url_parameters", "pmproap_pmpro_paypal_e
 //update the level cost
 function pmproap_pmpro_checkout_level($level)
 {
+	global $current_user;
+
     if (!isset($level->id)) {
         return $level;
     }
@@ -403,6 +405,10 @@ function pmproap_pmpro_checkout_level($level)
                 $level->trial_amount = 0;
                 $level->trial_limit = 0;
 
+	            //unset expiration period and number
+	            unset($level->expiration_period);
+	            unset($level->expiration_number);
+
                 //don't unsubscribe to the old level after checkout
                 if (!function_exists("pmproap_pmpro_cancel_previous_subscriptions")) {
                     function pmproap_pmpro_cancel_previous_subscriptions($cancel)
@@ -411,6 +417,17 @@ function pmproap_pmpro_checkout_level($level)
                     }
                 }
                 add_filter("pmpro_cancel_previous_subscriptions", "pmproap_pmpro_cancel_previous_subscriptions");
+
+	            //keep current enddate
+	            if (!function_exists("pmproap_pmpro_checkout_end_date")) {
+		            function pmproap_pmpro_checkout_end_date($enddate, $user_id, $pmpro_level, $startdate)
+		            {
+			            $user_level = pmpro_getMembershipLevelForUser($user_id);
+			            return date('Y-m-d H:i:s', $user_level->enddate);
+		            }
+	            }
+	            add_filter("pmpro_checkout_end_date", "pmproap_pmpro_checkout_end_date", 10, 4);
+
             } else {
                 //add the ap price to the membership
                 $level->initial_payment = $level->initial_payment + $pmproap_price;
