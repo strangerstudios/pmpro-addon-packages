@@ -406,8 +406,8 @@ function pmproap_pmpro_checkout_level($level)
                 $level->trial_limit = 0;
 
 	            //unset expiration period and number
-	            unset($level->expiration_period);
-	            unset($level->expiration_number);
+	            $level->expiration_period = NULL;
+	            $level->expiration_number = NULL;
 
                 //don't unsubscribe to the old level after checkout
                 if (!function_exists("pmproap_pmpro_cancel_previous_subscriptions")) {
