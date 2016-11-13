@@ -377,6 +377,27 @@ function pmproap_pmpro_paypal_express_return_url_parameters($params)
 add_filter("pmpro_paypal_express_return_url_parameters", "pmproap_pmpro_paypal_express_return_url_parameters");
 
 /*
+       Give the user access to the page after PayPal Standard Order Success
+*/
+if (!function_exists("pmproap_pmpro_updated_order_paypal")) {
+   function pmproap_pmpro_updated_order_paypal($order)
+   {
+
+       if( ($order->status == "success") && ($order->gateway == "paypalstandard") && (strpos($order->notes, 'Addon Package:') !== false) ){
+
+          preg_match("/Addon Package:(.*)\(#(\d+)\)/", $order->notes, $matches);
+          $pmproap_ap = $matches[2];
+          if (!empty($pmproap_ap)) {
+             pmproap_addMemberToPost($order->user_id, $pmproap_ap);
+          }
+
+       }
+   }
+}
+add_action('pmpro_added_order', 'pmproap_pmpro_updated_order_paypal');
+add_action('pmpro_updated_order', 'pmproap_pmpro_updated_order_paypal');	
+
+/*
 	Tweak the checkout page when ap is passed in.
 */
 //update the level cost
