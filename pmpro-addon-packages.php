@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Addon Packages
 Plugin URI: http://www.paidmembershipspro.com/pmpro-addon-packages/
 Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
-Version: .7.1
+Version: .7.2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -423,7 +423,10 @@ function pmproap_pmpro_checkout_level($level)
 		            function pmproap_pmpro_checkout_end_date($enddate, $user_id, $pmpro_level, $startdate)
 		            {
 			            $user_level = pmpro_getMembershipLevelForUser($user_id);
-			            return date('Y-m-d H:i:s', $user_level->enddate);
+						if(!empty($user_level) && !empty($user_level->enddate) && $user->enddate != '0000-00-00 00:00:00')
+							return date_i18n('Y-m-d H:i:s', $user_level->enddate);
+						else
+							return $enddate;
 		            }
 	            }
 	            add_filter("pmpro_checkout_end_date", "pmproap_pmpro_checkout_end_date", 10, 4);
