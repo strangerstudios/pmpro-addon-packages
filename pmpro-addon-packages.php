@@ -48,7 +48,7 @@ function pmproap_post_meta()
 	$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
 ?>    
     <input type="hidden" name="pmproap_noncename" id="pmproap_noncename" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) )?>" />
-	
+    <input type="hidden" name="quick_edit" value="true" />
 	<?php if($pmproap_price && empty($pmpro_page_levels[$post->ID])) { ?>
 		<p><strong class="pmpro_red"><?php _e('Warning: This page is not locked down yet.', 'pmproap');?></strong> <?php _e('You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to.', 'pmproap');?></p>
 	<?php } elseif($pmproap_price) { ?>
@@ -71,10 +71,10 @@ function pmproap_post_save($post_id)
     if (empty($post_id))
         return false;
 
-    if (!empty($_POST['pmproap_noncename']) && !wp_verify_nonce($_POST['pmproap_noncename'], plugin_basename(__FILE__))) {
+    if (empty($_POST['quick_edit']) || (!empty($_POST['pmproap_noncename']) && !wp_verify_nonce($_POST['pmproap_noncename'], plugin_basename(__FILE__)))) {
         return $post_id;
     }
-
+    
     // verify if this is an auto save routine. If it is our form has not been submitted, so we dont want
     // to do anything
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
