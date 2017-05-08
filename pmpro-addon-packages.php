@@ -285,12 +285,12 @@ function pmproap_pmpro_text_filter($text)
 						$level_names[] = $level->name;
 					}
 					
-					$text = "<p>" . __("This content requires that you purchase additional access. The price is %s or free for our %s members.", pmpro_formatPrice($pmproap_price), pmpro_implodeToEnglish($level_names)) . "</p>";
+					$text = "<p>" . sprintf ( __( "This content requires that you purchase additional access. The price is %s or free for our %s members.", "pmproap"), pmpro_formatPrice($pmproap_price), pmpro_implodeToEnglish($level_names) ) . "</p>";
 					$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . sprintf(__("Purchase this Content (%s)", 'pmproap'), pmpro_formatPrice($pmproap_price)) . "</a> <a href=\"" . pmpro_url("levels") . "\">" . __("Choose a Membership Level", "pmproap") . "</a></p>";
 				}
 				else
 				{
-					$text = "<p>" . sprintf(__("This content requires that you purchase additional access. The price is %s.", "pmproap"), pmpro_formatPrice($pmproap_price)) . "</p>";
+					$text = "<p>" . sprintf( __("This content requires that you purchase additional access. The price is %s.", "pmproap"), pmpro_formatPrice($pmproap_price)) . "</p>";
 					$text .= "<p><a href=\"" . pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) . "\">" . __("Click here to checkout", "pmproap") . "</a></p>";
 				}
 			}
