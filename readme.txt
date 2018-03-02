@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 3.6
-Tested up to: 4.7.4
-Stable tag: .7.3
+Tested up to: 4.9.4
+Stable tag: .7.4
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -59,6 +59,10 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .7.4 =
+* ENHANCEMENT: WordPress Coding Standards and Improved PHPDoc Blocs
+* ENHANCEMENT: Added the pmproap_text_level_id filter to adjust the level chosen for the addon packages checkout links.
+
 = .7.3 =
 * BUG FIX: Fixed issue where using Quick Edit on a post would set the addon package price to 0.
 * BUG FIX: Fixed issues with localization.

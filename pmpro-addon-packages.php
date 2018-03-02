@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Addon Packages
  * Plugin URI: https://www.paidmembershipspro.com/pmpro-addon-packages/
  * Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
- * Version: .7.3.1
+ * Version: .7.4
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
  */
@@ -358,6 +358,7 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
 		$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
 	}
 
+	$text_level_id = null;
 	if ( ! empty( $current_user->membership_level ) && in_array( $current_user->membership_level->ID, $post_levels ) ) {
 		$text_level_id = $current_user->membership_level->id;
 	} elseif ( ! empty( $post_levels ) ) {
@@ -370,6 +371,17 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
 			}
 		}
 	}
+
+	/**
+	 * Filter the text_level_id
+	 *
+	 * @since .7.4
+	 * @var  int   $text_level_id ID of level to default to when checking out for an addon package.
+	 * @var  int   $post_id       ID of the post for the addon package.
+	 * @var  int   $user_id       ID of the user checking out.
+	 * @var  array $post_levels   Array of level ids with access to this post.
+	 */
+	$text_level_id = apply_filters( 'pmproap_text_level_id', $text_level_id, $post_id, $user_id, $post_levels );
 
 	// didn't find a level id to use yet? return false and user's will be linked to the levels page.
 	if ( empty( $text_level_id ) ) {
