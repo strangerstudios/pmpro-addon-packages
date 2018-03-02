@@ -372,6 +372,7 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
 		}
 	}
 
+	$text_level_id = apply_filters( 'add_2_text_level_id', $text_level_id );
 	// didn't find a level id to use yet? return false and user's will be linked to the levels page.
 	if ( empty( $text_level_id ) ) {
 		$text_level_id = false;
@@ -833,7 +834,27 @@ function pmproap_csv_addon_package( $order ) {
 		return '';
 	}
 }
+/**
+ * [add_text_level_id description]
+ *
+ * @param [type] $text_level_id [description]
+ */
+function add_text_level_id( $text_level_id ) {
+	// the $text_level_id parameter is an array of all text_level_id from the pmproap_getLevelIDForCheckoutLink() function
+	$extra_text_level_id = array(
+		// Add to array
+	);
 
+	/**
+	 * pmproap_getLevelIDForCheckoutLink
+	 *
+	 * @var array
+	 */
+	$text_level_id = array_merge( $extra_text_level_id, $text_level_id );
+
+	return $text_level_id;
+}
+add_filter( 'add_2_text_level_id', 'add_text_level_id' );
 /**
  * Function to add links to the plugin row meta.
  */
