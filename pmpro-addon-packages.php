@@ -75,7 +75,7 @@ function pmproap_post_save( $post_id ) {
 		return false;
 	}
 
-	if ( empty( $_POST['quick_edit'] ) || ( ! empty( $_POST['pmproap_noncename'] ) && ! wp_verify_nonce( $_POST['pmproap_noncename'], plugin_basename( __FILE__ ) )) ) {
+	if ( empty( $_POST['quick_edit'] ) || ( ! empty( $_POST['pmproap_noncename'] ) && ! wp_verify_nonce( $_POST['pmproap_noncename'], plugin_basename( __FILE__ ) ) ) ) {
 		return $post_id;
 	}
 
@@ -167,8 +167,8 @@ function pmproap_addMemberToPost( $user_id, $post_id ) {
 /**
  * Returns true if this post is locked to at least one membership level and has a pmproap_price.
  *
- * @param  [type] $post_id [description]
- * @return [type]          [description]
+ * @param  int $post_id ID of the post to check if locked.
+ * @return bool         Returns true if locked, false if not.
  */
 function pmproap_isPostLocked( $post_id ) {
 	global $wpdb, $pmpro_page_levels;
@@ -196,9 +196,9 @@ function pmproap_isPostLocked( $post_id ) {
 /**
  * Returns true if a user has access to a page.
  *
- * @param  [type] $user_id [description]
- * @param  [type] $post_id [description]
- * @return [type]          [description]
+ * @param  int $user_id  ID of the user to check.
+ * @param  int $post_id  ID of the post to check.
+ * @return bool          Returns true if the user has access to the post, false if not.
  */
 function pmproap_hasAccess( $user_id, $post_id ) {
 	// does this user have a level giving them access to everything?
@@ -227,9 +227,8 @@ function pmproap_hasAccess( $user_id, $post_id ) {
 /**
  * [pmproap_removeMemberFromPost description]
  *
- * @param  [type] $user_id [description]
- * @param  [type] $post_id [description]
- * @return [type]          [description]
+ * @param  int $user_id ID of user to remove from post.
+ * @param  int $post_id ID of post to remove user from.
  */
 function pmproap_removeMemberFromPost( $user_id, $post_id ) {
 	$user_posts = get_user_meta( $user_id, '_pmproap_posts', true );
@@ -237,14 +236,14 @@ function pmproap_removeMemberFromPost( $user_id, $post_id ) {
 
 	// remove the post from the user
 	if ( is_array( $user_posts ) ) {
-		if ( ($key = array_search( $post_id, $user_posts )) !== false ) {
+		if ( ( $key = array_search( $post_id, $user_posts ) ) !== false ) {
 			unset( $user_posts[ $key ] );
 		}
 	}
 
 	// remove the user from the post
 	if ( is_array( $post_users ) ) {
-		if ( ($key = array_search( $user_id, $post_users )) !== false ) {
+		if ( ( $key = array_search( $user_id, $post_users ) ) !== false ) {
 			unset( $post_users[ $key ] );
 		}
 	}
@@ -398,7 +397,7 @@ add_filter( 'pmpro_paypal_express_return_url_parameters', 'pmproap_pmpro_paypal_
 if ( ! function_exists( 'pmproap_pmpro_updated_order_paypal' ) ) {
 	function pmproap_pmpro_updated_order_paypal( $order ) {
 
-		if ( ($order->status == 'success') && ($order->gateway == 'paypalstandard') && (strpos( $order->notes, 'Addon Package:' ) !== false) ) {
+		if ( ( $order->status == 'success' ) && ( $order->gateway == 'paypalstandard' ) && ( strpos( $order->notes, 'Addon Package:' ) !== false ) ) {
 
 			preg_match( '/Addon Package:(.*)\(#(\d+)\)/', $order->notes, $matches );
 			$pmproap_ap = $matches[2];
@@ -537,8 +536,8 @@ add_filter( 'pmpro_checkout_level', 'pmproap_pmpro_checkout_level' );
 /**
  * Remove level description if checking out for level you already have.
  *
- * @param  [type] $level [description]
- * @return [type]        [description]
+ * @param  object $level Level object to be filtered.
+ * @return object $level The filtered level object.
  */
 function pmproap_pmpro_checkout_level_have_it( $level ) {
 	global $pmpro_pages;
@@ -558,10 +557,10 @@ add_filter( 'pmpro_checkout_level', 'pmproap_pmpro_checkout_level_have_it' );
 /**
  * Remove "membership level" from name if the user already has a level.
  *
- * @param  [type] $translated_text [description]
- * @param  [type] $text            [description]
- * @param  [type] $domain          [description]
- * @return [type]                  [description]
+ * @param  string $translated_text Translated text.
+ * @param  string $text            Original text.
+ * @param  string $domain          Text domain.
+ * @return string                  Filtered text.
  */
 function pmproap_gettext_you_have_selected( $translated_text, $text, $domain ) {
 	global $pmpro_pages;
@@ -582,9 +581,9 @@ add_filter( 'gettext', 'pmproap_gettext_you_have_selected', 10, 3 );
 /**
  * Remove "for membership" from cost text
  *
- * @param  [type] $text  [description]
- * @param  [type] $level [description]
- * @return [type]        [description]
+ * @param  string $text  Level cost text.
+ * @param  object $level Level object to build text from.
+ * @return string        Filtered text.
  */
 function pmproap_pmpro_level_cost_text( $text, $level ) {
 	global $pmpro_pages;
@@ -742,9 +741,7 @@ function pmproap_profile_fields( $user_id ) {
 	<?php
 }
 /**
- * [pmproap_profile_fields_update description]
- *
- * @return [type] [description]
+ * Add or remove user from packages when updating via the edit user page in the dashboard.
  */
 function pmproap_profile_fields_update() {
 	if ( isset( $_REQUEST['new_pmproap_posts'] ) || isset( $_REQUEST['remove_pmproap_posts'] ) ) {
@@ -789,11 +786,10 @@ add_action( 'edit_user_profile', 'pmproap_profile_fields' );
 add_action( 'profile_update', 'pmproap_profile_fields_update' );
 
 /**
- * Add Expiration Date to User Meta if set above
+ * Add expiration date to user meta when a user is added to a package.
  *
- * @param  [type] $user_id [description]
- * @param  [type] $post_id [description]
- * @return [type]          [description]
+ * @param  int $user_id ID of user being added to a package.
+ * @param  int $post_id ID of the post/package the user is being added to.
  */
 function pmproap_add_exp_date( $user_id, $post_id ) {
 	if ( defined( 'PMPROAP_EXP_DAYS' ) && PMPROAP_EXP_DAYS > 0 ) {
@@ -804,11 +800,10 @@ function pmproap_add_exp_date( $user_id, $post_id ) {
 
 add_action( 'pmproap_action_add_to_package', 'pmproap_add_exp_date', 10, 2 );
 /**
- * [pmproap_remove_exp_date description]
+ * Remove expiration date in user meta when a user is removed from a package.
  *
- * @param  [type] $user_id [description]
- * @param  [type] $post_id [description]
- * @return [type]          [description]
+ * @param  int $user_id ID of user being removed from a package.
+ * @param  int $post_id ID of the post/package the user is being removed from.
  */
 function pmproap_remove_exp_date( $user_id, $post_id ) {
 	if ( get_user_meta( $user_id, 'pmproap_post_id_' . $post_id . '_exp_date' ) ) {
