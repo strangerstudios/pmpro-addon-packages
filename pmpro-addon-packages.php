@@ -678,6 +678,7 @@ function pmproap_pmpro_member_links_top() {
 }
 
 add_action( 'pmpro_member_links_top', 'pmproap_pmpro_member_links_top' );
+add_action( 'pmpro_invoice_bullets_top', 'pmproap_pmpro_member_links_top' );
 
 /**
  * Show the purchased pages for each user on the edit user/profile  page of the admin
