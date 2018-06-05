@@ -603,7 +603,7 @@ function pmproap_pmpro_level_cost_text( $text, $level ) {
 	if ( is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) &&
 		pmpro_hasMembershipLevel( $level->id ) ) {
-		$text = str_replace( __( 'The price for membership', 'pmproap' ), __( 'The price is', 'pmproap' ), $text );
+		$text = str_replace( __( 'The price for membership', 'pmproap' ), __( 'The price', 'pmproap' ), $text );
 		$text = str_replace( __( ' now', 'pmproap' ), '', $text );
 	}
 
