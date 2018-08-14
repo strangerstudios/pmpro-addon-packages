@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Addon Packages
  * Plugin URI: https://www.paidmembershipspro.com/pmpro-addon-packages/
  * Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
- * Version: .7.5
+ * Version: .7.6
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
  */
@@ -664,9 +664,17 @@ add_filter( 'pmpro_confirmation_message', 'pmproap_pmpro_confirmation_message' )
 /**
  * Show purchased posts on the account page
  */
-function pmproap_pmpro_member_links_top() {
-	global $current_user;
-	$post_ids = get_user_meta( $current_user->ID, '_pmproap_posts', true );
+function pmproap_pmpro_member_links_top( $invoice = NULL) {
+	if( !empty( $invoice ) ) {
+		$user_id = $invoice->user_id;
+	}
+
+	if( empty($user_id ) ) {
+		global $current_user;
+		$user_id = $current_user->ID;	
+	}
+	
+	$post_ids = get_user_meta( $user_id, '_pmproap_posts', true );
 	if ( is_array( $post_ids ) ) {
 		foreach ( $post_ids as $post_id ) {
 			$apost = get_post( $post_id );
