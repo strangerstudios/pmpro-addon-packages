@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 4
 Tested up to: 4.9.8
-Stable tag: .7.6
+Stable tag: .7.7
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -36,7 +36,7 @@ The [pmpro_addon_packages] shortcode allows you to display a "shop" like page of
 Shortcode attributes include:
 * checkout_button: The text displayed on the button linking to checkout. (default: "Buy Now").
 * exclude: A comma-separated list of the page IDs to exclude from display (default: none).
-* include: Optionally set this attribute to only show subpages of the active page. Accepts: "subpages". (default: shows all pages and posts with an addon package price).
+* include: Optionally set this attribute to only show subpages of the active page or to show a specific package or list of packages by post ID. Accepts: "subpages", "1", or "1,2,...". (default: shows all pages and posts with an addon package price).
 * layout: The layout of the output. (default: table). Accepts "div", "table", "2col", "3col", "4col" (column-type layouts will work with the Memberlite Theme or any theme based on the Foundation 5 grid system).
 * link: Hyperlink the post/page title to the single view; accepts “true” or “false” (default: true).
 * orderby: Accepts any orderby parameter as defined in the codex. (default: menu_order).
@@ -59,6 +59,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .7.7 =
+* ENHANCEMENT: You can now set the include attribute on the pmpro_addon_packages shortcode to a specific post ID or comma-separated list of post IDs to only include those packages in the table.
+
 = .7.6 =
 * BUG FIX: Fixed issue with link to addon package shown on invoice pages.
 

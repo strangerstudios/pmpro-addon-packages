@@ -32,11 +32,20 @@
 		{
 			$post_type = "page";
 			$post_parent = $post->ID;
+
+			$include = NULL;	//so it doesn't affect the query below
 		}
 		else
 		{
 			$post_type = array('post', 'page');
 			$post_parent = NULL;
+
+			//including post IDs
+			if(!empty($include)) {
+				// prep exclude array
+				$include = str_replace(" ", "", $include);
+				$include = explode(",", $include);
+			}
 		}
 		
 		if($link === "0" || $link === "false" || $link === "no")
@@ -68,6 +77,7 @@
 			"post_type"=>$post_type,
 			"post_parent"=>$post_parent,
 			"post__not_in"=>$exclude,
+			"post__in"=>$include,
 		);
 		$pmproap_posts = get_posts($args);
 		
