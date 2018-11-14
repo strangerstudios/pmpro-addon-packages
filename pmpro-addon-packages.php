@@ -3,27 +3,10 @@
  * Plugin Name: Paid Memberships Pro - Addon Packages
  * Plugin URI: https://www.paidmembershipspro.com/pmpro-addon-packages/
  * Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
- * Version: .7.7
+ * Version: .7.8
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
  */
-
-	/**
-	 * Story
-	 *
-	 * Admin designates a post as an "addon package".
-	 * Sets a price for access to the post. (pmproap_price)
-	 * Selects which membership levels can purchase the package. (pmproap_levels)
-	 * For users without access, the page will show a link to purchase at the bottom of the page.
-	 * Purchase goes to either a new checkout page or the PMPro checkout page with some parameters passed in.
-	 * After checking out, they are taken to a new confirmation page or the PMPro confirmation page with extra info.
-	 * After purchasing, the user ID is added to post meta (pmproap_users). The post ID is also added to user meta (pmproap_posts).
-
-	Limitations
-	 * Only one time charges.
-	 * No tax.
-	 * No discount codes.
-	 */
 
 $custom_dir = get_stylesheet_directory() . '/paid-memberships-pro/pmpro-addon-packages/';
 $custom_file = $custom_dir . 'pmpro-addon-packages-shortcode.php';
@@ -92,16 +75,15 @@ function pmproap_post_save( $post_id ) {
 	}
 
 	// OK, we're authenticated: we need to find and save the data
-	if ( ! empty( $_POST['pmproap_price'] ) ) {
+	if ( isset( $_POST['pmproap_price'] ) ) {
 		$mydata = preg_replace( '[^0-9\.]', '', $_POST['pmproap_price'] );
-	} else {
-		$mydata = '';
 	}
 
 	update_post_meta( $post_id, '_pmproap_price', $mydata );
 
 	return $mydata;
 }
+add_action( 'save_post', 'pmproap_post_save' );
 
 /**
  * @since v0.7 - Supports Custom Post Type (CPT) posts as add-on package/posts
@@ -119,17 +101,7 @@ function pmproap_post_meta_wrapper() {
 		add_meta_box( 'pmproap_post_meta', __( 'PMPro Addon Package Settings', 'pmproap' ), 'pmproap_post_meta', $type, 'normal' );
 	}
 }
-
-if ( is_admin() ) {
-	add_action( 'admin_menu', 'pmproap_post_meta_wrapper' );
-	add_action( 'save_post', 'pmproap_post_save' );
-
-	if ( ! defined( 'WP_CONTENT_DIR' ) ) {
-		define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' );
-	}
-
-	require_once( WP_CONTENT_DIR . '/plugins/paid-memberships-pro/adminpages/dashboard.php' );
-}
+add_action( 'admin_menu', 'pmproap_post_meta_wrapper' );
 
 /**
  * These functions are used to add a member to a post or check if a member has been added to a post.

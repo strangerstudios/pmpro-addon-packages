@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 4
 Tested up to: 4.9.8
-Stable tag: .7.7
+Stable tag: .7.8
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -59,6 +59,10 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= .7.8 =
+* BUG FIX: Removed random include of the /adminpages/dashboard.php files which was causing a fatal error in PMPro v2.0, which removes that file.
+* BUG FIX/ENHANCEMENT: Switched a !empty() with isset() in the code that saves the meta fields. This prevents the addon package price from being zero'd out if a post is updated via a function call or in some other way where the meta fields aren't present.
+
 = .7.7 =
 * ENHANCEMENT: You can now set the include attribute on the pmpro_addon_packages shortcode to a specific post ID or comma-separated list of post IDs to only include those packages in the table.
 
