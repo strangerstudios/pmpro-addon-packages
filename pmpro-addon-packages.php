@@ -551,7 +551,7 @@ function pmproap_gettext_you_have_selected( $translated_text, $text, $domain ) {
 	// only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
 	if ( ! empty( $pmpro_pages ) && is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) &&
-		$domain == 'pmpro' &&
+		$domain == 'paid-memberships-pro' &&
 		strpos( $text, 'have selected' ) !== false &&
 		pmpro_hasMembershipLevel( intval( $_REQUEST['level'] ) ) ) {
 		$translated_text = str_replace( __( ' membership level', 'pmproap' ), '', $translated_text );
