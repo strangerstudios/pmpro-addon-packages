@@ -33,7 +33,7 @@ function pmproap_post_meta() {
 	}
 
 	$pmproap_price = get_post_meta( $post->ID, '_pmproap_price', true );
-?>    
+?>
 	<input type="hidden" name="pmproap_noncename" id="pmproap_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 	<input type="hidden" name="quick_edit" value="true" />
 	<?php if ( $pmproap_price && empty( $pmpro_page_levels[ $post->ID ] ) ) { ?>
@@ -566,7 +566,7 @@ function pmproap_gettext_you_have_selected( $translated_text, $text, $domain ) {
 	// only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
 	if ( ! empty( $pmpro_pages ) && is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) &&
-		$domain == 'pmpro' &&
+		$domain == 'paid-memberships-pro' &&
 		strpos( $text, 'have selected' ) !== false &&
 		pmpro_hasMembershipLevel( intval( $_REQUEST['level'] ) ) ) {
 		$translated_text = str_replace( __( ' membership level', 'pmproap' ), '', $translated_text );
@@ -658,9 +658,9 @@ function pmproap_pmpro_member_links_top( $invoice = NULL) {
 
 	if( empty($user_id ) ) {
 		global $current_user;
-		$user_id = $current_user->ID;	
+		$user_id = $current_user->ID;
 	}
-	
+
 	$post_ids = get_user_meta( $user_id, '_pmproap_posts', true );
 	if ( is_array( $post_ids ) ) {
 		foreach ( $post_ids as $post_id ) {
