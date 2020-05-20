@@ -364,6 +364,21 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
 }
 
 /**
+ * Ensure that addon package is not lost if user
+ * clicks login button on checkout page
+ *
+ * @param  string $redirect_link after login.
+ * @return string
+ */
+function pmproap_checkout_login_redirect( $redirect_link ) {
+	if ( ! empty( $_REQUEST['ap'] ) ) {
+		$redirect_link .= '&ap=' . $_REQUEST['ap'];
+	}
+	return $redirect_link;
+}
+add_filter( 'pmpro_checkout_login_redirect', 'pmproap_checkout_login_redirect' );
+
+/**
  * Add ap to PayPal Express return url parameters
  */
 function pmproap_pmpro_paypal_express_return_url_parameters( $params ) {
@@ -551,7 +566,7 @@ function pmproap_gettext_you_have_selected( $translated_text, $text, $domain ) {
 	// only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
 	if ( ! empty( $pmpro_pages ) && is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) &&
-		$domain == 'paid-memberships-pro' &&
+		$domain == 'pmpro' &&
 		strpos( $text, 'have selected' ) !== false &&
 		pmpro_hasMembershipLevel( intval( $_REQUEST['level'] ) ) ) {
 		$translated_text = str_replace( __( ' membership level', 'pmproap' ), '', $translated_text );
