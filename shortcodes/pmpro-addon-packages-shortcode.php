@@ -11,8 +11,8 @@
 		global $wpdb, $post, $current_user;
 		
 		extract(shortcode_atts(array(
-			'checkout_button' => __('Buy Now', 'pmproap'),
-			'levels_button' => __('Choose a Level', 'pmproap'),
+			'checkout_button' => __('Buy Now', 'pmpro-addon-packages'),
+			'levels_button' => __('Choose a Level', 'pmpro-addon-packages'),
 			'exclude' => NULL,
 			'layout' => 'table',
 			'link' => true,
@@ -20,7 +20,7 @@
 			'orderby'	=> 'menu_order',
 			'order'	=>	'ASC',
 			'thumbnail' => 'thumbnail',
-			'view_button' => __('View Now', 'pmproap'),
+			'view_button' => __('View Now', 'pmpro-addon-packages'),
 		), $atts));					
 		
 		// prep exclude array
@@ -261,7 +261,7 @@
 		}
 	else
 	{
-		_e('No add on packages found.','pmproap');
+		_e('No add on packages found.','pmpro-addon-packages');
 	}		
 	$temp_content = ob_get_contents();
 	ob_end_clean();
