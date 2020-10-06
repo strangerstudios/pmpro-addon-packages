@@ -6,7 +6,17 @@
  * Version: .7.9
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
+ * Text Domain: pmpro-addon-packages
+ * Domain Path: /languages
  */
+
+/**
+ * Load the languages folder for translations.
+ */
+function pmproap_load_textdomain(){
+	load_plugin_textdomain( 'pmpro-addon-packages', false, basename( dirname( __FILE__ ) ) . '/languages' ); 
+}
+add_action( 'init', 'pmproap_load_textdomain' );
 
 $custom_dir = get_stylesheet_directory() . '/paid-memberships-pro/pmpro-addon-packages/';
 $custom_file = $custom_dir . 'pmpro-addon-packages-shortcode.php';
@@ -37,15 +47,15 @@ function pmproap_post_meta() {
 	<input type="hidden" name="pmproap_noncename" id="pmproap_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 	<input type="hidden" name="quick_edit" value="true" />
 	<?php if ( $pmproap_price && empty( $pmpro_page_levels[ $post->ID ] ) ) { ?>
-		<p><strong class="pmpro_red"><?php _e( 'Warning: This page is not locked down yet.', 'pmproap' ); ?></strong> <?php _e( 'You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to.', 'pmproap' ); ?></p>
+		<p><strong class="pmpro_red"><?php _e( 'Warning: This page is not locked down yet.', 'pmpro-addon-packages' ); ?></strong> <?php _e( 'You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to.', 'pmpro-addon-packages' ); ?></p>
 	<?php } elseif ( $pmproap_price ) { ?>
-		<p><strong class="pmpro_green"><?php _e( 'This page is restricted.', 'pmproap' ); ?></strong> <?php printf( __( 'Members will have to pay %s to gain access to this page. To open access to all members, delete the price below then Save/Update this post.', 'pmproap' ), pmpro_formatPrice( $pmproap_price ) ); ?></p>
+		<p><strong class="pmpro_green"><?php _e( 'This page is restricted.', 'pmpro-addon-packages' ); ?></strong> <?php printf( __( 'Members will have to pay %s to gain access to this page. To open access to all members, delete the price below then Save/Update this post.', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ) ); ?></p>
 	<?php } else { ?>
-		<p><?php _e( 'To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.', 'pmproap' ); ?></p>
+		<p><?php _e( 'To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.', 'pmpro-addon-packages' ); ?></p>
 	<?php } ?>
 
 	<div>
-		<label><strong><?php _e( 'Price', 'pmproap' ); ?></strong></label>
+		<label><strong><?php _e( 'Price', 'pmpro-addon-packages' ); ?></strong></label>
 		&nbsp;&nbsp;&nbsp; <?php echo $pmpro_currency_symbol; ?><input type="text" id="pmproap_price" name="pmproap_price" value="<?php echo esc_attr( $pmproap_price ); ?>" />
 	</div>
 <?php
@@ -98,7 +108,7 @@ function pmproap_post_meta_wrapper() {
 	}
 
 	foreach ( $post_types as $type ) {
-		add_meta_box( 'pmproap_post_meta', __( 'PMPro Addon Package Settings', 'pmproap' ), 'pmproap_post_meta', $type, 'normal' );
+		add_meta_box( 'pmproap_post_meta', __( 'PMPro Addon Package Settings', 'pmpro-addon-packages' ), 'pmproap_post_meta', $type, 'normal' );
 	}
 }
 add_action( 'admin_menu', 'pmproap_post_meta_wrapper' );
@@ -262,8 +272,8 @@ function pmproap_pmpro_text_filter( $text ) {
 			$text_level_id = pmproap_getLevelIDForCheckoutLink( $post->ID, $current_user->ID );
 
 			if ( empty( $text_level_id ) ) {
-				$text = '<p>' . __( 'You must first purchase a membership level before purchasing this content. ', 'pmproap' ) . '</p>';
-				$text .= '<p><a href="' . pmpro_url( 'levels' ) . '">' . __( 'Click here to choose a membership level.', 'pmproap' ) . '</a></p>';
+				$text = '<p>' . __( 'You must first purchase a membership level before purchasing this content. ', 'pmpro-addon-packages' ) . '</p>';
+				$text .= '<p><a href="' . pmpro_url( 'levels' ) . '">' . __( 'Click here to choose a membership level.', 'pmpro-addon-packages' ) . '</a></p>';
 			} else {
 				// what's the price
 				$pmproap_price = get_post_meta( $post->ID, '_pmproap_price', true );
@@ -279,11 +289,11 @@ function pmproap_pmpro_text_filter( $text ) {
 						$level_names[] = $level->name;
 					}
 
-					$text = '<p>' . sprintf( __( 'This content requires that you purchase additional access. The price is %1$s or free for our %2$s members.', 'pmproap' ), pmpro_formatPrice( $pmproap_price ), pmpro_implodeToEnglish( $level_names ) ) . '</p>';
-					$text .= '<p><a href="' . pmpro_url( 'checkout', '?level=' . $text_level_id . '&ap=' . $post->ID ) . '">' . sprintf( __( 'Purchase this Content (%s)', 'pmproap' ), pmpro_formatPrice( $pmproap_price ) ) . '</a> <a href="' . pmpro_url( 'levels' ) . '">' . __( 'Choose a Membership Level', 'pmproap' ) . '</a></p>';
+					$text = '<p>' . sprintf( __( 'This content requires that you purchase additional access. The price is %1$s or free for our %2$s members.', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ), pmpro_implodeToEnglish( $level_names ) ) . '</p>';
+					$text .= '<p><a href="' . pmpro_url( 'checkout', '?level=' . $text_level_id . '&ap=' . $post->ID ) . '">' . sprintf( __( 'Purchase this Content (%s)', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ) ) . '</a> <a href="' . pmpro_url( 'levels' ) . '">' . __( 'Choose a Membership Level', 'pmpro-addon-packages' ) . '</a></p>';
 				} else {
-					$text = '<p>' . sprintf( __( 'This content requires that you purchase additional access. The price is %s.', 'pmproap' ), pmpro_formatPrice( $pmproap_price ) ) . '</p>';
-					$text .= '<p><a href="' . pmpro_url( 'checkout', '?level=' . $text_level_id . '&ap=' . $post->ID ) . '">' . __( 'Click here to checkout', 'pmproap' ) . '</a></p>';
+					$text = '<p>' . sprintf( __( 'This content requires that you purchase additional access. The price is %s.', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ) ) . '</p>';
+					$text .= '<p><a href="' . pmpro_url( 'checkout', '?level=' . $text_level_id . '&ap=' . $post->ID ) . '">' . __( 'Click here to checkout', 'pmpro-addon-packages' ) . '</a></p>';
 				}
 			}
 		}
@@ -471,7 +481,7 @@ function pmproap_pmpro_checkout_level( $level ) {
 			if ( pmpro_hasMembershipLevel( $level->id ) ) {
 				$level->name = $ap_post->post_title;
 			} else {
-				$level->name .= sprintf( __( ' + access to %s', 'pmproap' ), $ap_post->post_title );
+				$level->name .= sprintf( __( ' + access to %s', 'pmpro-addon-packages' ), $ap_post->post_title );
 			}
 
 			// don't show the discount code field
@@ -569,8 +579,8 @@ function pmproap_gettext_you_have_selected( $translated_text, $text, $domain ) {
 		$domain == 'paid-memberships-pro' &&
 		strpos( $text, 'have selected' ) !== false &&
 		pmpro_hasMembershipLevel( intval( $_REQUEST['level'] ) ) ) {
-		$translated_text = str_replace( __( ' membership level', 'pmproap' ), '', $translated_text );
-		$translated_text = str_replace( __( 'You have selected the', 'pmproap' ), __( 'You are purchasing additional access to:', 'pmproap' ), $translated_text );
+		$translated_text = str_replace( __( ' membership level', 'pmpro-addon-packages' ), '', $translated_text );
+		$translated_text = str_replace( __( 'You have selected the', 'pmpro-addon-packages' ), __( 'You are purchasing additional access to:', 'pmpro-addon-packages' ), $translated_text );
 	}
 	return $translated_text;
 }
@@ -590,8 +600,8 @@ function pmproap_pmpro_level_cost_text( $text, $level ) {
 	if ( is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) &&
 		pmpro_hasMembershipLevel( $level->id ) ) {
-		$text = str_replace( __( 'The price for membership', 'pmproap' ), __( 'The price', 'pmproap' ), $text );
-		$text = str_replace( __( ' now', 'pmproap' ), '', $text );
+		$text = str_replace( __( 'The price for membership', 'pmpro-addon-packages' ), __( 'The price', 'pmpro-addon-packages' ), $text );
+		$text = str_replace( __( ' now', 'pmpro-addon-packages' ), '', $text );
 	}
 
 	return $text;
@@ -641,7 +651,7 @@ function pmproap_pmpro_confirmation_message( $message ) {
 		$ap = $_REQUEST['ap'];
 		$ap_post = get_post( $ap );
 
-		$message .= '<p class="pmproap_confirmation">' . sprintf( __( 'Continue on to %s.', 'pmproap' ), '<a href="' . get_permalink( $ap_post->ID ) . '">' . $ap_post->post_title . '</a>' ) . '</p>';
+		$message .= '<p class="pmproap_confirmation">' . sprintf( __( 'Continue on to %s.', 'pmpro-addon-packages' ), '<a href="' . get_permalink( $ap_post->ID ) . '">' . $ap_post->post_title . '</a>' ) . '</p>';
 	}
 	return $message;
 }
@@ -692,7 +702,7 @@ function pmproap_profile_fields( $user_id ) {
 		return false;
 	}
 ?>
-<h3><?php _e( 'Purchased Addon Packages', 'pmproap' ); ?></h3>
+<h3><?php _e( 'Purchased Addon Packages', 'pmpro-addon-packages' ); ?></h3>
 <table class="form-table">
 	<?php
 		$user_posts = get_user_meta( $user_id, '_pmproap_posts', true );
@@ -714,7 +724,7 @@ function pmproap_profile_fields( $user_id ) {
 					?>
 						<span id="pmproap_remove_span_<?php echo $upost->ID; ?>">
 						<a target="_blank" href="<?php echo esc_attr( get_permalink( $upost->ID ) ); ?>"><?php echo $upost->post_title; ?></a>
-						&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo $upost->ID; ?>" class="pmproap_remove" href="javascript:void(0);"><?php _e( 'remove', 'pmproap' ); ?></a>
+						&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo $upost->ID; ?>" class="pmproap_remove" href="javascript:void(0);"><?php _e( 'remove', 'pmpro-addon-packages' ); ?></a>
 						</span>
 										</td>
 			</tr>
@@ -723,15 +733,15 @@ function pmproap_profile_fields( $user_id ) {
 	}
 	?>
 	<tr>
-		<th><?php _e( 'Give this User a Package', 'pmproap' ); ?></th>
+		<th><?php _e( 'Give this User a Package', 'pmpro-addon-packages' ); ?></th>
 		<td>
-			<input type="text" id="new_pmproap_posts_1" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e( 'Enter a post/page ID', 'pmproap' ); ?></small>
+			<input type="text" id="new_pmproap_posts_1" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e( 'Enter a post/page ID', 'pmpro-addon-packages' ); ?></small>
 		</td>
 	</tr>
 	<tr id="pmproap_add_tr">
 		<th></th>
 		<td>
-			<a id="pmproap_add" href="javascript:void(0);"><?php _e( '+ Add Another', 'pmproap' ); ?></a>
+			<a id="pmproap_add" href="javascript:void(0);"><?php _e( '+ Add Another', 'pmpro-addon-packages' ); ?></a>
 		</td>
 	</tr>
 </table>
@@ -742,7 +752,7 @@ function pmproap_profile_fields( $user_id ) {
 		//too add another text input for a new package
 		jQuery('#pmproap_add').click(function() {
 			npmproap_adds++;
-			jQuery('#pmproap_add_tr').before('<tr><th></th><td><input type="text" id="new_pmproap_posts_' + npmproap_adds + '" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e( 'Enter a post/page ID', 'pmproap' ); ?></small></td></tr>');
+			jQuery('#pmproap_add_tr').before('<tr><th></th><td><input type="text" id="new_pmproap_posts_' + npmproap_adds + '" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e( 'Enter a post/page ID', 'pmpro-addon-packages' ); ?></small></td></tr>');
 		});
 
 			//removing a package
@@ -855,8 +865,8 @@ function pmproap_csv_addon_package( $order ) {
 function pmproap_plugin_row_meta( $links, $file ) {
 	if ( strpos( $file, 'pmpro-addon-packages.php' ) !== false ) {
 		$new_links = array(
-			'<a href="' . esc_url( 'http://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-purchase-access-to-a-single-page/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmproap' ) ) . '">' . __( 'Docs', 'pmproap' ) . '</a>',
-			'<a href="' . esc_url( 'http://paidmembershipspro.com/support/' ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmproap' ) ) . '">' . __( 'Support', 'pmproap' ) . '</a>',
+			'<a href="' . esc_url( 'http://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-purchase-access-to-a-single-page/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-addon-packages' ) ) . '">' . __( 'Docs', 'pmpro-addon-packages' ) . '</a>',
+			'<a href="' . esc_url( 'http://paidmembershipspro.com/support/' ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-addon-packages' ) ) . '">' . __( 'Support', 'pmpro-addon-packages' ) . '</a>',
 		);
 		$links = array_merge( $links, $new_links );
 	}
