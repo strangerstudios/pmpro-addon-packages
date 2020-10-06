@@ -665,6 +665,11 @@ function pmproap_pmpro_member_links_top( $invoice = NULL) {
 	if ( is_array( $post_ids ) ) {
 		foreach ( $post_ids as $post_id ) {
 			$apost = get_post( $post_id );
+			
+			// In case the post is deleted, trashed, drafted, etc. Just skip it.
+			if ( empty( $apost ) || $apost->post_status != 'publish' ) {
+				continue;
+			}
 			?>
 			<li><a href="<?php echo get_permalink( $post_id ); ?>"><?php echo $apost->post_title; ?></a></li>
 			<?php
@@ -699,6 +704,13 @@ function pmproap_profile_fields( $user_id ) {
 			<td>
 				<?php
 					$upost = get_post( $upost_id );
+					
+					// Show dummy info if the post was deleted/missing.
+					if ( empty( $upost ) ) {
+						$upost = new stdClass();
+						$upost->ID = $upost_id;
+						$upost->post_title = sprintf( __( '[Deleted Post with ID#%s]', 'pmpro-addon-packages' ), $upost_id );
+					}
 					?>
 						<span id="pmproap_remove_span_<?php echo $upost->ID; ?>">
 						<a target="_blank" href="<?php echo esc_attr( get_permalink( $upost->ID ) ); ?>"><?php echo $upost->post_title; ?></a>
