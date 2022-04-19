@@ -1,8 +1,8 @@
 === Paid Memberships Pro - Addon Packages ===
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
-Requires at least: 4
-Tested up to: 5.5
+Requires at least: 5.2
+Tested up to: 5.9
 Stable tag: 0.8
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.

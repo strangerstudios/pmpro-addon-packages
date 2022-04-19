@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Paid Memberships Pro - Addon Packages
- * Plugin URI: https://www.paidmembershipspro.com/pmpro-addon-packages/
- * Description: Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
+ * Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-purchase-access-to-a-single-page/
+ * Description: Sell members-only access to individual pages or posts, or sell a la carte items for a flat fee.
  * Version: 0.8
- * Author: Stranger Studios
- * Author URI: https://www.strangerstudios.com
+ * Author: Paid Memberships Pro
+ * Author URI: https://www.paidmembershipspro.com
  * Text Domain: pmpro-addon-packages
  * Domain Path: /languages
  */
