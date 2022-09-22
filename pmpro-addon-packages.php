@@ -532,7 +532,7 @@ if ( ! function_exists( 'pmproap_pmpro_checkout_end_date' ) ) {
 		if ( ! empty( pmproap_get_addon_price_at_checkout() ) && ! empty( $user_level ) && ! empty( $user_level->enddate ) && $user->enddate != '0000-00-00 00:00:00' ) {
 			return date_i18n( 'Y-m-d H:i:s', $user_level->enddate );
 		} else {
-			return $cancel;
+			return $enddate;
 		}
 	}
 }
