@@ -338,11 +338,12 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
 	// make sure membership_level obj is populated
 	if ( is_user_logged_in() ) {
 		$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
+		$current_user->membership_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 	}
 
 	$text_level_id = null;
-	if ( ! empty( $current_user->membership_level ) && in_array( $current_user->membership_level->ID, $post_levels ) ) {
-		$text_level_id = $current_user->membership_level->id;
+	if ( ! empty( $current_user->membership_levels ) && ! empty( array_intersect( wp_list_pluck( $current_user->membership_levels, 'id' ), $post_levels ) ) ) {
+		$text_level_id = current( array_intersect( wp_list_pluck( $current_user->membership_levels, 'id' ), $post_levels ) );
 	} elseif ( ! empty( $post_levels ) ) {
 		// find a free level to checkout with
 		foreach ( $post_levels as $post_level_id ) {
@@ -528,8 +529,8 @@ if ( ! function_exists( 'pmproap_pmpro_checkout_end_date' ) ) {
 	 * @return string The end date.
 	 */
 	function pmproap_pmpro_checkout_end_date( $enddate, $user_id, $pmpro_level, $startdate ) {
-		$user_level = pmpro_getMembershipLevelForUser( $user_id );
-		if ( ! empty( pmproap_get_addon_price_at_checkout() ) && ! empty( $user_level ) && ! empty( $user_level->enddate ) && $user->enddate != '0000-00-00 00:00:00' ) {
+		$user_level = pmpro_getSpecificMembershipLevelForUser( $user_id, $pmpro_level->id );
+		if ( ! empty( pmproap_get_addon_price_at_checkout() ) && ! empty( $user_level ) && ! empty( $user_level->enddate ) && $user_level->enddate != '0000-00-00 00:00:00' ) {
 			return date_i18n( 'Y-m-d H:i:s', $user_level->enddate );
 		} else {
 			return $enddate;
