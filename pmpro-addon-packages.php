@@ -653,10 +653,13 @@ function pmproap_gettext_you_have_selected( $translated_text, $text, $domain ) {
 	if ( ! empty( $pmpro_pages ) && is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) &&
 		$domain == 'paid-memberships-pro' &&
-		strpos( $text, 'have selected' ) !== false &&
-		pmpro_hasMembershipLevel( intval( $_REQUEST['level'] ) ) ) {
-		$translated_text = str_replace( __( ' membership level', 'pmpro-addon-packages' ), '', $translated_text );
-		$translated_text = str_replace( __( 'You have selected the', 'pmpro-addon-packages' ), __( 'You are purchasing additional access to:', 'pmpro-addon-packages' ), $translated_text );
+		strpos( $text, 'have selected' ) !== false ) {
+		// Get the level being purchased.
+		$checkout_level = pmpro_getLevelAtCheckout();
+		if ( ! empty( $checkout_level ) && pmpro_hasMembershipLevel( $checkout_level->id ) ) {
+			$translated_text = str_replace( __( ' membership level', 'pmpro-addon-packages' ), '', $translated_text );
+			$translated_text = str_replace( __( 'You have selected the', 'pmpro-addon-packages' ), __( 'You are purchasing additional access to:', 'pmpro-addon-packages' ), $translated_text );
+		}
 	}
 	return $translated_text;
 }
