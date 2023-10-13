@@ -338,11 +338,12 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
 	// make sure membership_level obj is populated
 	if ( is_user_logged_in() ) {
 		$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
+		$current_user->membership_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 	}
 
 	$text_level_id = null;
-	if ( ! empty( $current_user->membership_level ) && in_array( $current_user->membership_level->ID, $post_levels ) ) {
-		$text_level_id = $current_user->membership_level->id;
+	if ( ! empty( $current_user->membership_levels ) && ! empty( array_intersect( wp_list_pluck( $current_user->membership_levels, 'id' ), $post_levels ) ) ) {
+		$text_level_id = current( array_intersect( wp_list_pluck( $current_user->membership_levels, 'id' ), $post_levels ) );
 	} elseif ( ! empty( $post_levels ) ) {
 		// find a free level to checkout with
 		foreach ( $post_levels as $post_level_id ) {
@@ -450,28 +451,6 @@ function pmproap_pmpro_checkout_level( $level ) {
 				// unset expiration period and number
 				$level->expiration_period = null;
 				$level->expiration_number = null;
-
-				// don't unsubscribe to the old level after checkout
-				if ( ! function_exists( 'pmproap_pmpro_cancel_previous_subscriptions' ) ) {
-					function pmproap_pmpro_cancel_previous_subscriptions( $cancel ) {
-						return false;
-					}
-				}
-				add_filter( 'pmpro_cancel_previous_subscriptions', 'pmproap_pmpro_cancel_previous_subscriptions' );
-
-				// keep current enddate
-				if ( ! function_exists( 'pmproap_pmpro_checkout_end_date' ) ) {
-					function pmproap_pmpro_checkout_end_date( $enddate, $user_id, $pmpro_level, $startdate ) {
-						$user_level = pmpro_getMembershipLevelForUser( $user_id );
-						if ( ! empty( $user_level ) && ! empty( $user_level->enddate ) && $user->enddate != '0000-00-00 00:00:00' ) {
-							return date_i18n( 'Y-m-d H:i:s', $user_level->enddate );
-						} else {
-							return $enddate;
-						}
-					}
-				}
-				add_filter( 'pmpro_checkout_end_date', 'pmproap_pmpro_checkout_end_date', 10, 4 );
-
 			} else {
 				// add the ap price to the membership
 				$level->initial_payment = $level->initial_payment + $pmproap_price;
@@ -483,55 +462,6 @@ function pmproap_pmpro_checkout_level( $level ) {
 			} else {
 				$level->name .= sprintf( __( ' + access to %s', 'pmpro-addon-packages' ), $ap_post->post_title );
 			}
-
-			// don't show the discount code field
-			if ( ! function_exists( 'pmproap_pmpro_show_discount_code' ) ) {
-				function pmproap_pmpro_show_discount_code( $show ) {
-					return false;
-				}
-			}
-			add_filter( 'pmpro_show_discount_code', 'pmproap_pmpro_show_discount_code' );
-
-			// add hidden input to carry ap value
-			if ( ! function_exists( 'pmproap_pmpro_checkout_boxes' ) ) {
-				function pmproap_pmpro_checkout_boxes() {
-					if ( ! empty( $_REQUEST['ap'] ) ) {
-						?>
-						<input type="hidden" name="ap" value="<?php echo esc_attr( $_REQUEST['ap'] ); ?>"/>
-						<?php
-					}
-				}
-			}
-			add_action( 'pmpro_checkout_boxes', 'pmproap_pmpro_checkout_boxes' );
-
-			// give the user access to the page after checkout
-			if ( ! function_exists( 'pmproap_pmpro_after_checkout' ) ) {
-				function pmproap_pmpro_after_checkout( $user_id ) {
-					global $pmproap_ap;
-					if ( ! empty( $_SESSION['ap'] ) ) {
-						$pmproap_ap = intval( $_SESSION['ap'] );
-						unsset( $_SESSION['ap'] );
-					} elseif ( ! empty( $_REQUEST['ap'] ) ) {
-						$pmproap_ap = intval( $_REQUEST['ap'] );
-					}
-
-					if ( ! empty( $pmproap_ap ) ) {
-						pmproap_addMemberToPost( $user_id, $pmproap_ap );
-
-						// update the confirmation url
-						if ( ! function_exists( 'pmproap_pmpro_confirmation_url' ) ) {
-							function pmproap_pmpro_confirmation_url( $url, $user_id, $level ) {
-								global $pmproap_ap;
-								$url = add_query_arg( 'ap', $pmproap_ap, $url );
-
-								return $url;
-							}
-						}
-						add_filter( 'pmpro_confirmation_url', 'pmproap_pmpro_confirmation_url', 10, 3 );
-					}
-				}
-			}
-			add_action( 'pmpro_after_checkout', 'pmproap_pmpro_after_checkout' );
 		} else {
 			// woah, they passed a post id that isn't locked down
 		}
@@ -539,8 +469,154 @@ function pmproap_pmpro_checkout_level( $level ) {
 
 	return $level;
 }
-
 add_filter( 'pmpro_checkout_level', 'pmproap_pmpro_checkout_level' );
+
+/**
+ * Helper function to get the addon package price at checkout.
+ *
+ * @since TBD
+ */
+function pmproap_get_addon_price_at_checkout() {
+	// Cache value to avoid multiple calls.
+	static $price = null;
+	if ( ! is_null( $price ) ) {
+		return $price;
+	}
+
+	// Default price to 0.
+	$price = 0;
+
+	// Get the price for the addon package if there is one set.
+	if ( isset( $_REQUEST['ap'] ) && ! empty( $_REQUEST['ap'] ) ) {
+		$ap            = intval( $_REQUEST['ap'] );
+		$ap_post       = get_post( $ap );
+		$pmproap_price = get_post_meta( $ap, '_pmproap_price', true );
+		if ( ! empty( $pmproap_price ) ) {
+			$price = $pmproap_price;
+		}
+	}
+
+	return $price;
+}
+
+if ( ! function_exists( 'pmproap_pmpro_cancel_previous_subscriptions' ) ) {
+	/**
+	 * Don't unsubscribe to the old level after checkout.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $cancel Whether to cancel the previous subscription.
+	 */
+	function pmproap_pmpro_cancel_previous_subscriptions( $cancel ) {
+		if ( ! empty( pmproap_get_addon_price_at_checkout() ) ) {
+			return false;
+		} else {
+			return $cancel;
+		}
+	}
+}
+add_filter( 'pmpro_cancel_previous_subscriptions', 'pmproap_pmpro_cancel_previous_subscriptions' );
+
+if ( ! function_exists( 'pmproap_pmpro_checkout_end_date' ) ) {
+	/**
+	 * Keep current enddate.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $enddate The end date.
+	 * @param int    $user_id The user ID.
+	 *
+	 * @return string The end date.
+	 */
+	function pmproap_pmpro_checkout_end_date( $enddate, $user_id, $pmpro_level, $startdate ) {
+		$user_level = pmpro_getSpecificMembershipLevelForUser( $user_id, $pmpro_level->id );
+		if ( ! empty( pmproap_get_addon_price_at_checkout() ) && ! empty( $user_level ) && ! empty( $user_level->enddate ) && $user_level->enddate != '0000-00-00 00:00:00' ) {
+			return date_i18n( 'Y-m-d H:i:s', $user_level->enddate );
+		} else {
+			return $enddate;
+		}
+	}
+}
+add_filter( 'pmpro_checkout_end_date', 'pmproap_pmpro_checkout_end_date', 10, 4 );
+
+
+if ( ! function_exists( 'pmproap_pmpro_show_discount_code' ) ) {
+	/**
+	 * Don't show the discount code field.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $show Whether to show the discount code field.
+	 * @return bool Whether to show the discount code field.
+	 */
+	function pmproap_pmpro_show_discount_code( $show ) {
+		if ( ! empty( pmproap_get_addon_price_at_checkout() ) ) {
+			return false;
+		} else {
+			return $show;
+		}
+	}
+}
+add_filter( 'pmpro_show_discount_code', 'pmproap_pmpro_show_discount_code' );
+
+if ( ! function_exists( 'pmproap_pmpro_checkout_boxes' ) ) {
+	/**
+	 * Add hidden input to carry ap value.
+	 *
+	 * @since TBD
+	 */
+	function pmproap_pmpro_checkout_boxes() {
+		if ( ! empty( pmproap_get_addon_price_at_checkout() ) ) {
+			?>
+			<input type="hidden" name="ap" value="<?php echo esc_attr( $_REQUEST['ap'] ); ?>"/>
+			<?php
+		}
+	}
+}
+add_action( 'pmpro_checkout_boxes', 'pmproap_pmpro_checkout_boxes' );
+
+if ( ! function_exists( 'pmproap_pmpro_after_checkout' ) ) {
+	/**
+	 * Give the user access to the page after checkout.
+	 *
+	 * @since TBD
+	 *
+	 * @param int $user_id The user ID.
+	 */
+	function pmproap_pmpro_after_checkout( $user_id ) {
+		global $pmproap_ap;
+		if ( ! empty( $_SESSION['ap'] ) ) {
+			$pmproap_ap = intval( $_SESSION['ap'] );
+			unsset( $_SESSION['ap'] );
+		} elseif ( ! empty( $_REQUEST['ap'] ) ) {
+			$pmproap_ap = intval( $_REQUEST['ap'] );
+		}
+
+		if ( ! empty( $pmproap_ap ) ) {
+			pmproap_addMemberToPost( $user_id, $pmproap_ap );
+		}
+	}
+}
+add_action( 'pmpro_after_checkout', 'pmproap_pmpro_after_checkout' );
+
+if ( ! function_exists( 'pmproap_pmpro_confirmation_url' ) ) {
+	/**
+	 * Update the confirmation url.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $url The confirmation url.
+	 * @return string The confirmation url.
+	 */
+	function pmproap_pmpro_confirmation_url( $url ) {
+		global $pmproap_ap;
+		if ( ! empty( $pmproap_ap ) ) {
+			$url = add_query_arg( 'ap', $pmproap_ap, $url );
+		}
+		return $url;
+	}
+}
+add_filter( 'pmpro_confirmation_url', 'pmproap_pmpro_confirmation_url', 10, 3 );
 
 /**
  * Remove level description if checking out for level you already have.
