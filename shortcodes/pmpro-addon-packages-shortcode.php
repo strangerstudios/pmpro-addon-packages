@@ -94,8 +94,8 @@
 			?>
 			<style>
 				.pmpro_addon_package td {vertical-align: middle; }
-				tr.pmpro_addon_package td.pmpro_addon_package-title h3 {margin: 0; }
-				#pmpro_addon_packages h3.pmpro_addon_package-title {margin: 0 0 2rem 0; }
+				tr.pmpro_addon_package td.pmpro_addon_package-title h2 {margin: 0; }
+				#pmpro_addon_packages h2.pmpro_addon_package-title {margin: 0 0 2rem 0; }
 				.pmpro_addon_package td.pmpro_addon_package-thumbnail img {max-width: 100%; height: auto; }
 				.pmpro_addon_package td.pmpro_addon_package-buy .pmpro_btn, .pmpro_addon_package td.pmpro_addon_package-view .pmpro_btn {display: block; }
 			</style>
@@ -127,14 +127,14 @@
 								}
 								?>
 								<td class="pmpro_addon_package-title">
-									<h3>
+									<h2>
 									<?php 
 										if(!empty($link))
 											echo '<a href="' . get_permalink() . '">' . get_the_title() . '</a>';
 										else
 											echo get_the_title();
 									?>
-									</h3>									
+									</h2>									
 								</td>
 								<?php
 									if(!empty($current_user->ID) && pmproap_hasAccess($current_user->ID,$post->ID))
@@ -201,7 +201,7 @@
 										echo '12 ';?>
 								columns">
 									<article id="pmpro_addon_package-<?php echo $post->ID; ?>" class="<?php echo implode(" ", get_post_class()); ?> pmpro_addon_package">							
-										<header class="entry-header"><h3 class="entry-title pmpro_addon_package-title">
+										<header class="entry-header"><h2 class="entry-title pmpro_addon_package-title">
 										<?php 
 											if ( has_post_thumbnail() && !empty($thumbnail))
 											{					
@@ -219,7 +219,7 @@
 											else
 												echo get_the_title();
 										?>									
-										</h3></header>
+										</h2></header>
 										<div class="entry-content">																		
 											<?php
 												if(!empty($current_user->ID) && pmproap_hasAccess($current_user->ID,$post->ID))

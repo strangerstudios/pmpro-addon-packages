@@ -781,7 +781,7 @@ function pmproap_profile_fields( $user_id ) {
 		return false;
 	}
 ?>
-<h3><?php _e( 'Purchased Addon Packages', 'pmpro-addon-packages' ); ?></h3>
+<h2><?php _e( 'Purchased Addon Packages', 'pmpro-addon-packages' ); ?></h2>
 <table class="form-table">
 	<?php
 		$user_posts = get_user_meta( $user_id, '_pmproap_posts', true );
