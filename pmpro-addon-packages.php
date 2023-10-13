@@ -584,6 +584,7 @@ if ( ! function_exists( 'pmproap_pmpro_after_checkout' ) ) {
 	 * @param int $user_id The user ID.
 	 */
 	function pmproap_pmpro_after_checkout( $user_id ) {
+		global $pmproap_ap;
 		if ( ! empty( $_SESSION['ap'] ) ) {
 			$pmproap_ap = intval( $_SESSION['ap'] );
 			unsset( $_SESSION['ap'] );
@@ -608,13 +609,7 @@ if ( ! function_exists( 'pmproap_pmpro_confirmation_url' ) ) {
 	 * @return string The confirmation url.
 	 */
 	function pmproap_pmpro_confirmation_url( $url ) {
-		if ( ! empty( $_SESSION['ap'] ) ) {
-			$pmproap_ap = intval( $_SESSION['ap'] );
-			unsset( $_SESSION['ap'] );
-		} elseif ( ! empty( $_REQUEST['ap'] ) ) {
-			$pmproap_ap = intval( $_REQUEST['ap'] );
-		}
-
+		global $pmproap_ap;
 		if ( ! empty( $pmproap_ap ) ) {
 			$url = add_query_arg( 'ap', $pmproap_ap, $url );
 		}
