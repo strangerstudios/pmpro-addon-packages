@@ -1,186 +1,180 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# Copyright (C) 2023 Paid Memberships Pro
+# This file is distributed under the same license as the Paid Memberships Pro - Addon Packages plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Paid Memberships Pro - Addon Packages 0.8.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
-"POT-Creation-Date: 2020-10-06 11:26+1100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
+"Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2023-10-13T16:43:57+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.8.1\n"
+"X-Domain: pmpro-addon-packages\n"
 
-#: pmpro-addon-packages.php:50 pmpro-addon-packages.php:50
+#. Plugin Name of the plugin
+msgid "Paid Memberships Pro - Addon Packages"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://www.paidmembershipspro.com/add-ons/pmpro-purchase-access-to-a-single-page/"
+msgstr ""
+
+#. Description of the plugin
+msgid "Sell members-only access to individual pages or posts, or sell a la carte items for a flat fee."
+msgstr ""
+
+#. Author of the plugin
+msgid "Paid Memberships Pro"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://www.paidmembershipspro.com"
+msgstr ""
+
+#: pmpro-addon-packages.php:50
 msgid "Warning: This page is not locked down yet."
 msgstr ""
 
-#: pmpro-addon-packages.php:50 pmpro-addon-packages.php:50
-msgid ""
-"You must select at least one membership level in the sidebar to the right to "
-"restrict access to this page. You can create a free membership level for "
-"this purpose if you need to."
+#: pmpro-addon-packages.php:50
+msgid "You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to."
 msgstr ""
 
-#: pmpro-addon-packages.php:52 pmpro-addon-packages.php:52
-#, php-format
-msgid ""
-"Members will have to pay %s to gain access to this page. To open access to "
-"all members, delete the price below then Save/Update this post."
-msgstr ""
-
-#: pmpro-addon-packages.php:52 pmpro-addon-packages.php:52
+#: pmpro-addon-packages.php:52
 msgid "This page is restricted."
 msgstr ""
 
-#: pmpro-addon-packages.php:54 pmpro-addon-packages.php:54
-msgid ""
-"To charge for access to this post and any subpages, set a price below then "
-"Save/Update this post. Only members of the levels set in the \"Require "
-"Membership\" sidebar will be able to purchase access to this post."
+#: pmpro-addon-packages.php:52
+msgid "Members will have to pay %s to gain access to this page. To open access to all members, delete the price below then Save/Update this post."
 msgstr ""
 
-#: pmpro-addon-packages.php:58 pmpro-addon-packages.php:58
+#: pmpro-addon-packages.php:54
+msgid "To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the \"Require Membership\" sidebar will be able to purchase access to this post."
+msgstr ""
+
+#: pmpro-addon-packages.php:58
 msgid "Price"
 msgstr ""
 
-#: pmpro-addon-packages.php:111 pmpro-addon-packages.php:111
+#: pmpro-addon-packages.php:111
 msgid "PMPro Addon Package Settings"
 msgstr ""
 
-#: pmpro-addon-packages.php:275 pmpro-addon-packages.php:275
-msgid ""
-"You must first purchase a membership level before purchasing this content. "
+#: pmpro-addon-packages.php:275
+msgid "You must first purchase a membership level before purchasing this content. "
 msgstr ""
 
-#: pmpro-addon-packages.php:276 pmpro-addon-packages.php:276
+#: pmpro-addon-packages.php:276
 msgid "Click here to choose a membership level."
 msgstr ""
 
-#: pmpro-addon-packages.php:292 pmpro-addon-packages.php:292
-#, php-format
-msgid ""
-"This content requires that you purchase additional access. The price is %1$s "
-"or free for our %2$s members."
+#: pmpro-addon-packages.php:292
+msgid "This content requires that you purchase additional access. The price is %1$s or free for our %2$s members."
 msgstr ""
 
-#: pmpro-addon-packages.php:293 pmpro-addon-packages.php:293
-msgid "Choose a Membership Level"
-msgstr ""
-
-#: pmpro-addon-packages.php:293 pmpro-addon-packages.php:293
-#, php-format
+#: pmpro-addon-packages.php:293
 msgid "Purchase this Content (%s)"
 msgstr ""
 
-#: pmpro-addon-packages.php:295 pmpro-addon-packages.php:295
-#, php-format
-msgid ""
-"This content requires that you purchase additional access. The price is %s."
+#: pmpro-addon-packages.php:293
+msgid "Choose a Membership Level"
 msgstr ""
 
-#: pmpro-addon-packages.php:296 pmpro-addon-packages.php:296
+#: pmpro-addon-packages.php:295
+msgid "This content requires that you purchase additional access. The price is %s."
+msgstr ""
+
+#: pmpro-addon-packages.php:296
 msgid "Click here to checkout"
 msgstr ""
 
-#: pmpro-addon-packages.php:484 pmpro-addon-packages.php:484
-#, php-format
+#: pmpro-addon-packages.php:463
 msgid " + access to %s"
 msgstr ""
 
-#: pmpro-addon-packages.php:582 pmpro-addon-packages.php:582
+#: pmpro-addon-packages.php:660
 msgid " membership level"
 msgstr ""
 
-#: pmpro-addon-packages.php:583 pmpro-addon-packages.php:583
-msgid "You are purchasing additional access to:"
-msgstr ""
-
-#: pmpro-addon-packages.php:583 pmpro-addon-packages.php:583
+#: pmpro-addon-packages.php:661
 msgid "You have selected the"
 msgstr ""
 
-#: pmpro-addon-packages.php:603 pmpro-addon-packages.php:603
-msgid "The price"
+#: pmpro-addon-packages.php:661
+msgid "You are purchasing additional access to:"
 msgstr ""
 
-#: pmpro-addon-packages.php:603 pmpro-addon-packages.php:603
+#: pmpro-addon-packages.php:682
 msgid "The price for membership"
 msgstr ""
 
-#: pmpro-addon-packages.php:604 pmpro-addon-packages.php:604
+#: pmpro-addon-packages.php:682
+msgid "The price"
+msgstr ""
+
+#: pmpro-addon-packages.php:683
 msgid " now"
 msgstr ""
 
-#: pmpro-addon-packages.php:654 pmpro-addon-packages.php:654
-#, php-format
+#: pmpro-addon-packages.php:733
 msgid "Continue on to %s."
 msgstr ""
 
-#: pmpro-addon-packages.php:705 pmpro-addon-packages.php:700
+#: pmpro-addon-packages.php:784
 msgid "Purchased Addon Packages"
 msgstr ""
 
-#: pmpro-addon-packages.php:722
-#, php-format
+#: pmpro-addon-packages.php:801
 msgid "[Deleted Post with ID#%s]"
 msgstr ""
 
-#: pmpro-addon-packages.php:727 pmpro-addon-packages.php:715
+#: pmpro-addon-packages.php:806
 msgid "remove"
 msgstr ""
 
-#: pmpro-addon-packages.php:736 pmpro-addon-packages.php:724
+#: pmpro-addon-packages.php:815
 msgid "Give this User a Package"
 msgstr ""
 
-#: pmpro-addon-packages.php:738 pmpro-addon-packages.php:755
-#: pmpro-addon-packages.php:726 pmpro-addon-packages.php:743
+#: pmpro-addon-packages.php:817
+#: pmpro-addon-packages.php:834
 msgid "Enter a post/page ID"
 msgstr ""
 
-#: pmpro-addon-packages.php:744 pmpro-addon-packages.php:732
+#: pmpro-addon-packages.php:823
 msgid "+ Add Another"
 msgstr ""
 
-#: pmpro-addon-packages.php:868 pmpro-addon-packages.php:856
-msgid "Docs"
-msgstr ""
-
-#: pmpro-addon-packages.php:868 pmpro-addon-packages.php:856
+#: pmpro-addon-packages.php:947
 msgid "View Documentation"
 msgstr ""
 
-#: pmpro-addon-packages.php:869 pmpro-addon-packages.php:857
-msgid "Support"
+#: pmpro-addon-packages.php:947
+msgid "Docs"
 msgstr ""
 
-#: pmpro-addon-packages.php:869 pmpro-addon-packages.php:857
+#: pmpro-addon-packages.php:948
 msgid "Visit Customer Support Forum"
 msgstr ""
 
-#: shortcodes/pmpro-addon-packages-shortcode.php:14
+#: pmpro-addon-packages.php:948
+msgid "Support"
+msgstr ""
+
 #: shortcodes/pmpro-addon-packages-shortcode.php:14
 msgid "Buy Now"
 msgstr ""
 
 #: shortcodes/pmpro-addon-packages-shortcode.php:15
-#: shortcodes/pmpro-addon-packages-shortcode.php:15
 msgid "Choose a Level"
 msgstr ""
 
 #: shortcodes/pmpro-addon-packages-shortcode.php:23
-#: shortcodes/pmpro-addon-packages-shortcode.php:23
 msgid "View Now"
 msgstr ""
 
-#: shortcodes/pmpro-addon-packages-shortcode.php:264
 #: shortcodes/pmpro-addon-packages-shortcode.php:264
 msgid "No add on packages found."
 msgstr ""
