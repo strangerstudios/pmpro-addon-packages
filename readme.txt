@@ -60,9 +60,9 @@ Please Note: This plugin is meant as a temporary solution. Most updates and fixe
 
 == Changelog ==
 = 0.8.1 - 2023-10-13 =
-ENHANCEMENT: Updating `<h3>` tags to `<h2>` tags for better accessibility. #62 (@dwanjuki)
-BUG FIX/ENHANCEMENT: Improved compatibility with Multiple Memberships Per User. #58 (@dparker1005)
-REFACTOR: No longer pulling the checkout level from the `$_REQUEST` variable. #61 (@dparker1005)
+* ENHANCEMENT: Updating `<h3>` tags to `<h2>` tags for better accessibility. #62 (@dwanjuki)
+* BUG FIX/ENHANCEMENT: Improved compatibility with Multiple Memberships Per User. #58 (@dparker1005)
+* REFACTOR: No longer pulling the checkout level from the `$_REQUEST` variable. #61 (@dparker1005)
 
 = 0.8 =
 * BUG FIX/ENHANCEMENT: Better handling of cases where an addon package post has been trashed, deleted, or set back to draft status.
