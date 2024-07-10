@@ -261,10 +261,37 @@ function pmproap_pmpro_has_membership_access_filter( $hasaccess, $mypost, $myuse
 add_filter( 'pmpro_has_membership_access_filter', 'pmproap_pmpro_has_membership_access_filter', 10, 4 );
 
 /**
+ * Filter the header message for the no access message.
+ *
+ * @since TBD
+ *
+ * @param string $header The header message for the no access message.
+ * @return string The filtered header message for the no access message.
+ */
+function pmproap_no_access_message_header( $header ) {
+	global $current_user, $post;
+
+	// We are running PMPro v3.1+, so make sure that deprecated filters don't run later.
+	remove_filter( 'pmpro_non_member_text_filter', 'pmproap_pmpro_text_filter' );
+	remove_filter( 'pmpro_not_logged_in_text_filter', 'pmproap_pmpro_text_filter' );
+
+	// Check if the post is locked and the user doesn't have access.
+	if ( ! empty( $post ) && pmproap_isPostLocked( $post->ID ) && ! pmproap_hasAccess( $current_user->ID, $post->ID ) ) {
+		$header = __( 'Purchase Required', 'pmpro-addon-packages' );
+	}
+
+	return $header;
+}
+add_filter( 'pmpro_no_access_message_header', 'pmproap_no_access_message_header' ); // PMPro v3.1+.
+
+/**
  * Filter the message for users without access.
+ *
+ * @param string $text The message for users without access.
+ * @return string The filtered message for users without access.
  */
 function pmproap_pmpro_text_filter( $text ) {
-	global $wpdb, $current_user, $post, $pmpro_currency_symbol;
+	global $current_user, $post;
 
 	if ( ! empty( $post ) ) {
 		if ( pmproap_isPostLocked( $post->ID ) && ! pmproap_hasAccess( $current_user->ID, $post->ID ) ) {
@@ -301,9 +328,9 @@ function pmproap_pmpro_text_filter( $text ) {
 
 	return $text;
 }
-
-add_filter( 'pmpro_non_member_text_filter', 'pmproap_pmpro_text_filter' );
-add_filter( 'pmpro_not_logged_in_text_filter', 'pmproap_pmpro_text_filter' );
+add_filter( 'pmpro_no_access_message_body', 'pmproap_pmpro_text_filter' ); // PMPro v3.1+.
+add_filter( 'pmpro_non_member_text_filter', 'pmproap_pmpro_text_filter' ); // Pre-PMPro v3.1.
+add_filter( 'pmpro_not_logged_in_text_filter', 'pmproap_pmpro_text_filter' ); // Pre-PMPro v3.1.
 
 /**
  * Figure out which PMPro level ID to use for the checkout link for an addon page.
