@@ -300,7 +300,7 @@ function pmproap_pmpro_text_filter( $text ) {
 
 			if ( empty( $text_level_id ) ) {
 				$text = '<p>' . __( 'You must first purchase a membership level before purchasing this content. ', 'pmpro-addon-packages' ) . '</p>';
-				$text .= '<p><a href="' . pmpro_url( 'levels' ) . '">' . __( 'Click here to choose a membership level.', 'pmpro-addon-packages' ) . '</a></p>';
+				$text .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . pmpro_url( 'levels' ) . '">' . __( 'Choose a Membership Level', 'pmpro-addon-packages' ) . '</a></p>';
 			} else {
 				// what's the price
 				$pmproap_price = get_post_meta( $post->ID, '_pmproap_price', true );
@@ -317,10 +317,10 @@ function pmproap_pmpro_text_filter( $text ) {
 					}
 
 					$text = '<p>' . sprintf( __( 'This content requires that you purchase additional access. The price is %1$s or free for our %2$s members.', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ), pmpro_implodeToEnglish( $level_names ) ) . '</p>';
-					$text .= '<p><a href="' . pmpro_url( 'checkout', '?level=' . $text_level_id . '&ap=' . $post->ID ) . '">' . sprintf( __( 'Purchase this Content (%s)', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ) ) . '</a> <a href="' . pmpro_url( 'levels' ) . '">' . __( 'Choose a Membership Level', 'pmpro-addon-packages' ) . '</a></p>';
+					$text .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . pmpro_url( 'checkout', '?level=' . $text_level_id . '&ap=' . $post->ID ) . '">' . sprintf( __( 'Purchase this Content (%s)', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ) ) . '</a> <a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . pmpro_url( 'levels' ) . '">' . __( 'Choose a Membership Level', 'pmpro-addon-packages' ) . '</a></p>';
 				} else {
 					$text = '<p>' . sprintf( __( 'This content requires that you purchase additional access. The price is %s.', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ) ) . '</p>';
-					$text .= '<p><a href="' . pmpro_url( 'checkout', '?level=' . $text_level_id . '&ap=' . $post->ID ) . '">' . __( 'Click here to checkout', 'pmpro-addon-packages' ) . '</a></p>';
+					$text .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . pmpro_url( 'checkout', '?level=' . $text_level_id . '&ap=' . $post->ID ) . '">' . __( 'Click Here to Check Out', 'pmpro-addon-packages' ) . '</a></p>';
 				}
 			}
 		}
