@@ -767,15 +767,9 @@ add_filter( 'pmpro_confirmation_message', 'pmproap_pmpro_confirmation_message' )
 /**
  * Show purchased posts on the account page
  */
-function pmproap_pmpro_member_links_top( $invoice = NULL) {
-	if( !empty( $invoice ) ) {
-		$user_id = $invoice->user_id;
-	}
-
-	if( empty($user_id ) ) {
-		global $current_user;
-		$user_id = $current_user->ID;
-	}
+function pmproap_pmpro_member_links_top() {
+	global $current_user;
+	$user_id = $current_user->ID;
 
 	$post_ids = get_user_meta( $user_id, '_pmproap_posts', true );
 	if ( is_array( $post_ids ) ) {
@@ -787,14 +781,77 @@ function pmproap_pmpro_member_links_top( $invoice = NULL) {
 				continue;
 			}
 			?>
-			<li><a href="<?php echo get_permalink( $post_id ); ?>"><?php echo $apost->post_title; ?></a></li>
+			<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
+				<a href="<?php echo get_permalink( $post_id ); ?>"><?php echo $apost->post_title; ?></a>
+				<?php
+					// Get the expiration date for the Addon Package.
+					$pmproap_ap_exp_date = get_user_meta( $user_id, 'pmproap_post_id_' . $post_id . '_exp_date', true );
+
+					if ( ! empty( $pmproap_ap_exp_date ) ) {
+						printf( __( '(Access expires on %s)', 'pmpro-addon-packages' ), esc_html( date_i18n( get_option( 'date_format' ), $pmproap_ap_exp_date ) ) );
+					}
+				?>
+			</li>
 			<?php
 		}
 	}
 }
-
 add_action( 'pmpro_member_links_top', 'pmproap_pmpro_member_links_top' );
-add_action( 'pmpro_invoice_bullets_top', 'pmproap_pmpro_member_links_top' );
+
+/**
+ * Show purchased post on the order.
+ *
+ * @since TBD
+ *
+ * @param  string $pmpro_order_single_meta The order meta.
+ * @param  object $pmpro_order             The order object.
+ * @return string                          The filtered order meta.
+ */
+function pmproap_pmpro_order_single_meta( $pmpro_order_single_meta, $pmpro_order ) {
+	// If the invoice is empty, return the order meta.
+	if ( empty( $pmpro_order ) ) {
+		return $pmpro_order_single_meta;
+	}
+
+	// Get the Addon Package post ID from the order notes.
+	$pmpro_order_notes = $pmpro_order->notes;
+
+	// If the notes are empty, return the order meta.
+	if ( empty( $pmpro_order_notes ) ) {
+		return $pmpro_order_single_meta;
+	}
+
+	// Get the Addon Package post ID from the order notes.
+	preg_match( '/Addon Package:(.*)\(#(\d+)\)/', $pmpro_order_notes, $matches );
+	$pmproap_ap_id = $matches[2];
+	if ( empty( $pmproap_ap_id ) ) {
+		return $pmpro_order_single_meta;
+	}
+
+	// Show the Addon Package on the order if it is published.
+	$apost = get_post( $pmproap_ap_id );
+	if ( empty( $apost ) || $apost->post_status != 'publish' ) {
+		return $pmpro_order_single_meta;
+	}
+
+	// Return if this user no longer has access to the Addon Package.
+	if ( ! pmproap_hasAccess( $pmpro_order->user_id, $pmproap_ap_id ) ) {
+		return $pmpro_order_single_meta;
+	}
+
+	$pmpro_order_single_meta['addon_package']['label'] = esc_html__( 'Additional Access', 'pmpro-addon-packages' );
+	$pmpro_order_single_meta['addon_package']['value'] = '<a href="' . get_permalink( $pmproap_ap_id ) . '">' . $apost->post_title . '</a>';
+
+	// Get the expiration date for the Addon Package.
+	$pmproap_ap_exp_date = get_user_meta( $pmpro_order->user_id, 'pmproap_post_id_' . $pmproap_ap_id . '_exp_date', true );
+
+	if ( ! empty( $pmproap_ap_exp_date ) ) {
+		$pmpro_order_single_meta['addon_package']['value'] .= '<br />' . sprintf( __( 'Expires on %s', 'pmpro-addon-packages' ), esc_html( date_i18n( get_option( 'date_format' ), $pmproap_ap_exp_date ) ) );
+	}
+
+	return $pmpro_order_single_meta;
+}
+add_action( 'pmpro_order_single_meta', 'pmproap_pmpro_order_single_meta', 10, 2 );
 
 /**
  * Show the purchased pages for each user on the edit user/profile  page of the admin
