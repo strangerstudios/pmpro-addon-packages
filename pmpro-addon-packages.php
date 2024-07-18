@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Addon Packages
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-purchase-access-to-a-single-page/
  * Description: Sell members-only access to individual pages or posts, or sell a la carte items for a flat fee.
- * Version: 0.8.1
+ * Version: 0.9
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: pmpro-addon-packages
