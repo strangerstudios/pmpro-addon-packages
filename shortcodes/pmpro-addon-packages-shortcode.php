@@ -37,7 +37,8 @@
 		}
 		else
 		{
-			$post_type = array('post', 'page');
+			//Apply filter
+			$post_type = apply_filters( 'pmproap_supported_post_types', array( 'page', 'post' ) );
 			$post_parent = NULL;
 
 			//including post IDs
