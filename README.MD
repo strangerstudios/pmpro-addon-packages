@@ -3,7 +3,7 @@
 # [Addon Packages: Purchase Access to a Page, Post or “Thing”](https://www.paidmembershipspro.com/add-ons/pmpro-purchase-access-to-a-single-page/) #
 [comment]: # (Generate badges from shields.io, only works for .org plugins to get other stats etc. We'd have to create our own endpoints for Premium plugins)
 
-![License](https://img.shields.io/badge/license-GPL--2.0%2B-red.svg?style=flat-square)
+![License](https://img.shields.io/badge/license-GPL--3.0%2B-red.svg?style=flat-square)
 
 ### Welcome to the Addon Packages GitHub Repository
 Sell access to individual pages or posts, or sell a la carte items for a flat fee.
