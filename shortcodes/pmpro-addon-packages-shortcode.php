@@ -1,7 +1,6 @@
 <?php 
 	//archives page for add on packages using [pmpro_addon_packages] shortcode
-	function pmpro_addon_packages_shortcode($atts, $content=null, $code="")
-	{
+	function pmpro_addon_packages_shortcode( $atts, $content=null, $code="" ) {
 		// $atts    ::= array of attributes
 		// $content ::= text within enclosing form of shortcode element
 		// $code    ::= the shortcode found, when == callback name
@@ -24,20 +23,19 @@
 		), $atts));					
 		
 		// prep exclude array
-		$exclude = str_replace(" ", "", $exclude);
-		$exclude = explode(",", $exclude);
-	
+		if ( ! empty( $exclude ) ) {
+			$exclude = str_replace(" ", "", $exclude);
+			$exclude = explode(",", $exclude);
+		}
+
 		//turn 0's into falses
-		if($include == "subpages")
-		{
-			$post_type = "page";
+		if( $include == "subpages" ) {
+			$post_type = array( 'page' );
 			$post_parent = $post->ID;
 
 			$include = NULL;	//so it doesn't affect the query below
-		}
-		else
-		{
-			$post_type = array('post', 'page');
+		} else {
+			$post_type = array( 'post', 'page' );
 			$post_parent = NULL;
 
 			//including post IDs
@@ -65,20 +63,28 @@
 		else
 			$thumbnail = false;
 				
-		// get posts
-		$args = array(
-			'meta_key'=>'_pmproap_price',
-			'meta_compare'=>'>',
-			'meta_value'=>'0',
-			"order"=>$order,
-			"orderby"=>$orderby,
-			'posts_per_page'=>-1,
-			'post_status'=>'publish',
-			"post_type"=>$post_type,
-			"post_parent"=>$post_parent,
-			"post__not_in"=>$exclude,
-			"post__in"=>$include,
-		);
+		/**
+		 * Filter the arguments for the get_posts() function for Addon Packages.
+		 * Note: The post_type includes the `pmproap_supported_post_types` filter as well to automatically show all Addon Packages. See the pmproap_post_meta_wrapper function.
+		 * 
+		 * @since TBD
+		 * 
+		 * @param array $args The arguments for the get_posts() function.
+		 */
+		$args = apply_filters( 'pmproap_shortcode_query_args', array(
+			'meta_key' => '_pmproap_price',
+			'meta_compare' => '>',
+			'meta_value' => '0',
+			"order" => $order,
+			"orderby" => $orderby,
+			'posts_per_page' => -1,
+			'post_status' => 'publish',
+			"post_type" => apply_filters( 'pmproap_supported_post_types', $post_type ),
+			"post_parent" => $post_parent,
+			"post__not_in" => $exclude,
+			"post__in" => $include,
+		) );
+
 		$pmproap_posts = get_posts($args);
 		
 		$layout_cols = preg_replace('/[^0-9]/', '', $layout);
