@@ -1,4 +1,4 @@
-<!-- ![](pmpro-sample-banner.png) -->
+![](pmpro-addon-packages-add-on-banner.png)
 
 # [Addon Packages: Purchase Access to a Page, Post or “Thing”](https://www.paidmembershipspro.com/add-ons/pmpro-purchase-access-to-a-single-page/) #
 [comment]: # (Generate badges from shields.io, only works for .org plugins to get other stats etc. We'd have to create our own endpoints for Premium plugins)
