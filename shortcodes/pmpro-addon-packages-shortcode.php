@@ -30,7 +30,7 @@
 
 		//turn 0's into falses
 		if( $include == "subpages" ) {
-			$post_type = 'page';
+			$post_type = array( 'page' );
 			$post_parent = $post->ID;
 
 			$include = NULL;	//so it doesn't affect the query below
