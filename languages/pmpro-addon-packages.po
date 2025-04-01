@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Paid Memberships Pro
+# Copyright (C) 2025 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro - Addon Packages plugin.
 msgid ""
 msgstr ""
@@ -9,9 +9,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-07-18T14:58:34+00:00\n"
+"POT-Creation-Date: 2025-04-01T12:50:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: pmpro-addon-packages\n"
 
 #: pmpro-addon-packages.php:50
@@ -83,6 +83,7 @@ msgstr ""
 #: pmpro-addon-packages.php:484
 #: pmpro-addon-packages.php:463
 #: pmpro-addon-packages.php:490
+#: pmpro-addon-packages.php:495
 #, php-format
 msgid " + access to %s"
 msgstr ""
@@ -90,42 +91,49 @@ msgstr ""
 #: pmpro-addon-packages.php:582
 #: pmpro-addon-packages.php:660
 #: pmpro-addon-packages.php:687
+#: pmpro-addon-packages.php:692
 msgid " membership level"
 msgstr ""
 
 #: pmpro-addon-packages.php:583
 #: pmpro-addon-packages.php:661
 #: pmpro-addon-packages.php:688
+#: pmpro-addon-packages.php:693
 msgid "You are purchasing additional access to:"
 msgstr ""
 
 #: pmpro-addon-packages.php:583
 #: pmpro-addon-packages.php:661
 #: pmpro-addon-packages.php:688
+#: pmpro-addon-packages.php:693
 msgid "You have selected the"
 msgstr ""
 
 #: pmpro-addon-packages.php:603
 #: pmpro-addon-packages.php:682
 #: pmpro-addon-packages.php:709
+#: pmpro-addon-packages.php:714
 msgid "The price"
 msgstr ""
 
 #: pmpro-addon-packages.php:603
 #: pmpro-addon-packages.php:682
 #: pmpro-addon-packages.php:709
+#: pmpro-addon-packages.php:714
 msgid "The price for membership"
 msgstr ""
 
 #: pmpro-addon-packages.php:604
 #: pmpro-addon-packages.php:683
 #: pmpro-addon-packages.php:710
+#: pmpro-addon-packages.php:715
 msgid " now"
 msgstr ""
 
 #: pmpro-addon-packages.php:654
 #: pmpro-addon-packages.php:733
 #: pmpro-addon-packages.php:760
+#: pmpro-addon-packages.php:765
 #, php-format
 msgid "Continue on to %s."
 msgstr ""
@@ -134,12 +142,14 @@ msgstr ""
 #: pmpro-addon-packages.php:700
 #: pmpro-addon-packages.php:784
 #: pmpro-addon-packages.php:868
+#: pmpro-addon-packages.php:873
 msgid "Purchased Addon Packages"
 msgstr ""
 
 #: pmpro-addon-packages.php:722
 #: pmpro-addon-packages.php:801
 #: pmpro-addon-packages.php:885
+#: pmpro-addon-packages.php:890
 #, php-format
 msgid "[Deleted Post with ID#%s]"
 msgstr ""
@@ -148,6 +158,7 @@ msgstr ""
 #: pmpro-addon-packages.php:715
 #: pmpro-addon-packages.php:806
 #: pmpro-addon-packages.php:890
+#: pmpro-addon-packages.php:895
 msgid "remove"
 msgstr ""
 
@@ -155,6 +166,7 @@ msgstr ""
 #: pmpro-addon-packages.php:724
 #: pmpro-addon-packages.php:815
 #: pmpro-addon-packages.php:899
+#: pmpro-addon-packages.php:904
 msgid "Give this User a Package"
 msgstr ""
 
@@ -166,6 +178,8 @@ msgstr ""
 #: pmpro-addon-packages.php:834
 #: pmpro-addon-packages.php:901
 #: pmpro-addon-packages.php:918
+#: pmpro-addon-packages.php:906
+#: pmpro-addon-packages.php:923
 msgid "Enter a post/page ID"
 msgstr ""
 
@@ -173,6 +187,7 @@ msgstr ""
 #: pmpro-addon-packages.php:732
 #: pmpro-addon-packages.php:823
 #: pmpro-addon-packages.php:907
+#: pmpro-addon-packages.php:912
 msgid "+ Add Another"
 msgstr ""
 
@@ -180,6 +195,7 @@ msgstr ""
 #: pmpro-addon-packages.php:856
 #: pmpro-addon-packages.php:947
 #: pmpro-addon-packages.php:1031
+#: pmpro-addon-packages.php:1036
 msgid "Docs"
 msgstr ""
 
@@ -187,6 +203,7 @@ msgstr ""
 #: pmpro-addon-packages.php:856
 #: pmpro-addon-packages.php:947
 #: pmpro-addon-packages.php:1031
+#: pmpro-addon-packages.php:1036
 msgid "View Documentation"
 msgstr ""
 
@@ -194,6 +211,7 @@ msgstr ""
 #: pmpro-addon-packages.php:857
 #: pmpro-addon-packages.php:948
 #: pmpro-addon-packages.php:1032
+#: pmpro-addon-packages.php:1037
 msgid "Support"
 msgstr ""
 
@@ -201,22 +219,27 @@ msgstr ""
 #: pmpro-addon-packages.php:857
 #: pmpro-addon-packages.php:948
 #: pmpro-addon-packages.php:1032
+#: pmpro-addon-packages.php:1037
 msgid "Visit Customer Support Forum"
 msgstr ""
 
 #: shortcodes/pmpro-addon-packages-shortcode.php:14
+#: shortcodes/pmpro-addon-packages-shortcode.php:13
 msgid "Buy Now"
 msgstr ""
 
 #: shortcodes/pmpro-addon-packages-shortcode.php:15
+#: shortcodes/pmpro-addon-packages-shortcode.php:14
 msgid "Choose a Level"
 msgstr ""
 
 #: shortcodes/pmpro-addon-packages-shortcode.php:23
+#: shortcodes/pmpro-addon-packages-shortcode.php:22
 msgid "View Now"
 msgstr ""
 
 #: shortcodes/pmpro-addon-packages-shortcode.php:264
+#: shortcodes/pmpro-addon-packages-shortcode.php:270
 msgid "No add on packages found."
 msgstr ""
 
@@ -254,13 +277,16 @@ msgid "Click Here to Check Out"
 msgstr ""
 
 #: pmpro-addon-packages.php:791
+#: pmpro-addon-packages.php:796
 msgid "(Access expires on %s)"
 msgstr ""
 
 #: pmpro-addon-packages.php:842
+#: pmpro-addon-packages.php:847
 msgid "Additional Access"
 msgstr ""
 
 #: pmpro-addon-packages.php:849
+#: pmpro-addon-packages.php:854
 msgid "Expires on %s"
 msgstr ""
