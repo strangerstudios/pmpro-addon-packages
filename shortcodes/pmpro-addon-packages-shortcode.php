@@ -71,7 +71,7 @@
 		 * 
 		 * @param array $args The arguments for the get_posts() function.
 		 */
-		$args = apply_filters( 'pmproap_shortcode_args', array(
+		$args = apply_filters( 'pmproap_shortcode_query_args', array(
 			'meta_key' => '_pmproap_price',
 			'meta_compare' => '>',
 			'meta_value' => '0',
