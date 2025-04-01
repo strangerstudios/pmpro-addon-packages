@@ -433,7 +433,6 @@ add_filter( 'pmpro_paypal_express_return_url_parameters', 'pmproap_pmpro_paypal_
  */
 function pmproap_pmpro_updated_order_paypal( $order ) {
 
-            'paypalstandard',
 	$gateways = apply_filters( 'pmproap_supported_offsite_gateways', array( 'paypalstandard', 'ccbill' ) );
 
 	// Cast it to an array in case it was filtered as a string.
