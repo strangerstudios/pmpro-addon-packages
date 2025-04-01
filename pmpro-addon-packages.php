@@ -425,22 +425,28 @@ function pmproap_pmpro_paypal_express_return_url_parameters( $params ) {
 	}
 	return $params;
 }
-
 add_filter( 'pmpro_paypal_express_return_url_parameters', 'pmproap_pmpro_paypal_express_return_url_parameters' );
 
 /**
- * Give the user access to the page after PayPal Standard Order Success
+ * Give the user access to the page after PayPal Standard or CCBill Order Success.
+ * Updated to support other gateways, not just PayPal Standard (Keeping the function name as-is for any backwards compatibilty or customizations that were done).
  */
-if ( ! function_exists( 'pmproap_pmpro_updated_order_paypal' ) ) {
-	function pmproap_pmpro_updated_order_paypal( $order ) {
+function pmproap_pmpro_updated_order_paypal( $order ) {
 
-		if ( ( $order->status == 'success' ) && ( $order->gateway == 'paypalstandard' ) && ( strpos( $order->notes, 'Addon Package:' ) !== false ) ) {
+            'paypalstandard',
+	$gateways = apply_filters( 'pmproap_supported_offsite_gateways', array( 'paypalstandard', 'ccbill' ) );
 
-			preg_match( '/Addon Package:(.*)\(#(\d+)\)/', $order->notes, $matches );
-			$pmproap_ap = $matches[2];
-			if ( ! empty( $pmproap_ap ) ) {
-				pmproap_addMemberToPost( $order->user_id, $pmproap_ap );
-			}
+	// Cast it to an array in case it was filtered as a string.
+	if ( ! is_array( $gateways ) ) {
+		$gateways = array( $gateways );
+	}
+
+	if ( ( $order->status == 'success' ) && in_array( $order->gateway, $gateways ) && ( strpos( $order->notes, 'Addon Package:' ) !== false ) ) {
+
+		preg_match( '/Addon Package:(.*)\(#(\d+)\)/', $order->notes, $matches );
+		$pmproap_ap = $matches[2];
+		if ( ! empty( $pmproap_ap ) ) {
+			pmproap_addMemberToPost( $order->user_id, $pmproap_ap );
 		}
 	}
 }
