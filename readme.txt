@@ -2,13 +2,13 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 5.2
-Tested up to: 6.6
-Stable tag: 0.9
+Tested up to: 6.7
+Stable tag: 0.9.1
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
 == Description ==
-You must have the latest version of Paid Memberships Pro installed (currently 1.8.5).
+You must have the latest version of Paid Memberships Pro installed (currently 1.8.5+).
 
 Story
 * Admin designates a post as an "addon package".
@@ -59,6 +59,10 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= 0.9.1 - 2025-04-01 =
+* ENHANCEMENT: Added filter `pmproap_supported_file_types` to the shortcode output so that these items may be listed. (@misfist, @andrewlimaza)
+* ENHANCEMENT: Added filter `pmproap_shortcode_query_args` to the shortcode so the query may be tweaked as needed programmatically. (@andrewlimaza)
+
 = 0.9 - 2024-07-18 =
 * ENHANCEMENT: Updated the frontend UI for compatibility with PMPro v3.1. #65 (@dparker1005, @kimcoleman)
 

@@ -67,7 +67,7 @@
 		 * Filter the arguments for the get_posts() function for Addon Packages.
 		 * Note: The post_type includes the `pmproap_supported_post_types` filter as well to automatically show all Addon Packages. See the pmproap_post_meta_wrapper function.
 		 * 
-		 * @since TBD
+		 * @since 0.9.1
 		 * 
 		 * @param array $args The arguments for the get_posts() function.
 		 */

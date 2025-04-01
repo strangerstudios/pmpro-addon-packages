@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Addon Packages
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-purchase-access-to-a-single-page/
  * Description: Sell members-only access to individual pages or posts, or sell a la carte items for a flat fee.
- * Version: 0.9
+ * Version: 0.9.1
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: pmpro-addon-packages
@@ -263,7 +263,7 @@ add_filter( 'pmpro_has_membership_access_filter', 'pmproap_pmpro_has_membership_
 /**
  * Filter the header message for the no access message.
  *
- * @since TBD
+ * @since 0.1
  *
  * @param string $header The header message for the no access message.
  * @return string The filtered header message for the no access message.
@@ -506,7 +506,7 @@ add_filter( 'pmpro_checkout_level', 'pmproap_pmpro_checkout_level' );
 /**
  * Helper function to get the addon package price at checkout.
  *
- * @since TBD
+ * @since 0.1
  */
 function pmproap_get_addon_price_at_checkout() {
 	// Cache value to avoid multiple calls.
@@ -535,7 +535,7 @@ if ( ! function_exists( 'pmproap_pmpro_cancel_previous_subscriptions' ) ) {
 	/**
 	 * Don't unsubscribe to the old level after checkout.
 	 *
-	 * @since TBD
+	 * @since 0.1
 	 *
 	 * @param bool $cancel Whether to cancel the previous subscription.
 	 */
@@ -553,7 +553,7 @@ if ( ! function_exists( 'pmproap_pmpro_checkout_end_date' ) ) {
 	/**
 	 * Keep current enddate.
 	 *
-	 * @since TBD
+	 * @since 0.1
 	 *
 	 * @param string $enddate The end date.
 	 * @param int    $user_id The user ID.
@@ -576,7 +576,7 @@ if ( ! function_exists( 'pmproap_pmpro_show_discount_code' ) ) {
 	/**
 	 * Don't show the discount code field.
 	 *
-	 * @since TBD
+	 * @since 0.1
 	 *
 	 * @param bool $show Whether to show the discount code field.
 	 * @return bool Whether to show the discount code field.
@@ -595,7 +595,7 @@ if ( ! function_exists( 'pmproap_pmpro_checkout_boxes' ) ) {
 	/**
 	 * Add hidden input to carry ap value.
 	 *
-	 * @since TBD
+	 * @since 0.1
 	 */
 	function pmproap_pmpro_checkout_boxes() {
 		if ( ! empty( pmproap_get_addon_price_at_checkout() ) ) {
@@ -611,7 +611,7 @@ if ( ! function_exists( 'pmproap_pmpro_after_checkout' ) ) {
 	/**
 	 * Give the user access to the page after checkout.
 	 *
-	 * @since TBD
+	 * @since 0.1
 	 *
 	 * @param int $user_id The user ID.
 	 */
@@ -635,7 +635,7 @@ if ( ! function_exists( 'pmproap_pmpro_confirmation_url' ) ) {
 	/**
 	 * Update the confirmation url.
 	 *
-	 * @since TBD
+	 * @since 0.1
 	 *
 	 * @param string $url The confirmation url.
 	 * @return string The confirmation url.
@@ -806,7 +806,7 @@ add_action( 'pmpro_member_links_top', 'pmproap_pmpro_member_links_top' );
 /**
  * Show purchased post on the order.
  *
- * @since TBD
+ * @since 0.1
  *
  * @param  string $pmpro_order_single_meta The order meta.
  * @param  object $pmpro_order             The order object.
