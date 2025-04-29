@@ -35,4 +35,4 @@ Here are some ways for **non-developers to contribute** to Addon Packages:
 
 1. Translate Addon Packages into your own [language](https://www.paidmembershipspro.com/paid-memberships-pro-in-your-language/).
 2. [Purchase a paid membership](https://paidmembershipspro.com/pricing) to help fund ongoing development and bug fixes.
-3. Leave an honest review for [Addon Packages](https://wordpress.org/support/plugin/repo-slug/reviews/#new-post).
+3. Leave an honest review for [Addon Packages](https://www.paidmembershipspro.com/submit-testimonial/).
