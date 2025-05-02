@@ -21,8 +21,7 @@ For detailed installation steps, visit the [documentation](https://www.paidmembe
 If you find an issue/bug, let us know by [creating a detailed GitHub issue](https://github.com/strangerstudios/pmpro-addon-packages/issues/new).
 
 ## Support ##
-This is a developer's portal for Addon Packages. We do not offer support on this channel. 
-**Any support related questions should be directed to [paidmembershipspro.com/support](https://www.paidmembershipspro.com/support/).**
+This is a developer's portal for Addon Packages. We do not offer support on this channel. **Any support related questions should be directed to [paidmembershipspro.com/support](https://www.paidmembershipspro.com/support/).**
 
 ## Contributing to Addon Packages ##
 We encourage and welcome any contribution to Addon Packages. Please read the [guidelines for contributing](https://github.com/strangerstudios/pmpro-addon-packages/blob/dev/.github/CONTRIBUTING.md) to this repository.
