@@ -658,6 +658,11 @@ add_filter( 'pmpro_confirmation_url', 'pmproap_pmpro_confirmation_url', 10, 3 );
  */
 function pmproap_pmpro_checkout_level_have_it( $level ) {
 	global $pmpro_pages;
+	// Bail if level object or level description is empty.
+	if ( empty( $level ) || empty( $level->description ) ) {
+		return $level;
+	}
+
 	// only checkout page, with ap passed in, and have the level checking out for
 	if ( is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) &&
