@@ -369,8 +369,16 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
 	}
 
 	$text_level_id = null;
-	if ( ! empty( $current_user->membership_levels ) && ! empty( array_intersect( wp_list_pluck( $current_user->membership_levels, 'id' ), $post_levels ) ) ) {
-		$text_level_id = current( array_intersect( wp_list_pluck( $current_user->membership_levels, 'id' ), $post_levels ) );
+	if ( ! empty( $current_user->membership_levels ) ) {
+		foreach ( $current_user->membership_levels as $key => $level ) {
+			// Skip levels that do not allow signups.
+			$level_obj = pmpro_getLevel( $level->id );
+			if ( empty( $level_obj ) || empty( $level_obj->allow_signups ) ) {
+				continue;
+			}
+			$text_level_id = $level->id;
+			break;
+		}
 	} elseif ( ! empty( $post_levels ) ) {
 		// find a free level to checkout with
 		foreach ( $post_levels as $post_level_id ) {
