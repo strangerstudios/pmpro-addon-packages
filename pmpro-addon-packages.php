@@ -378,8 +378,10 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
 			$text_level_id = $level->id;
 			break;
 		}
-	} else {
-		// Find the first free post level that allows addon purchase.
+	}
+
+	// Didn't find a level id to use yet? Find a free level to checkout with.
+	if ( empty( $text_level_id ) ) {
 		foreach ( $post_levels as $post_level_id ) {
 			$post_level = pmpro_getLevel( $post_level_id );
 			if ( ! empty( $post_level->allow_signups ) && pmpro_isLevelFree( $post_level ) ) {
