@@ -828,10 +828,10 @@ function pmproap_pmpro_order_single_meta( $pmpro_order_single_meta, $pmpro_order
 
 	// Get the Addon Package post ID from the order notes.
 	preg_match( '/Addon Package:(.*)\(#(\d+)\)/', $pmpro_order_notes, $matches );
-	$pmproap_ap_id = $matches[2];
-	if ( empty( $pmproap_ap_id ) ) {
+	if ( empty( $matches[2] ) ) {
 		return $pmpro_order_single_meta;
 	}
+	$pmproap_ap_id = $matches[2];
 
 	// Show the Addon Package on the order if it is published.
 	$apost = get_post( $pmproap_ap_id );
