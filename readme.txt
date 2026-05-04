@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 5.2
-Tested up to: 6.7
-Stable tag: 0.9.1
+Tested up to: 6.9
+Stable tag: 0.9.2
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -59,6 +59,11 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= 0.9.2 - 2026-05-04 =
+* BUG FIX: Levels that no longer allow signups are now skipped when generating the addon package checkout link. #72 (@dwanjuki)
+* BUG FIX: Resolved a fatal error that could occur on the addon package checkout page when an existing member's only matching level had signups disabled. #72 (@dwanjuki)
+* BUG FIX: Fixed an "Undefined array key" PHP warning on the orders admin page when order notes did not match the expected Addon Package pattern. #73 (@dwanjuki)
+
 = 0.9.1 - 2025-04-01 =
 * ENHANCEMENT: Added filter `pmproap_supported_file_types` to the shortcode output so that these items may be listed. (@misfist, @andrewlimaza)
 * ENHANCEMENT: Added filter `pmproap_shortcode_query_args` to the shortcode so the query may be tweaked as needed programmatically. (@andrewlimaza)
