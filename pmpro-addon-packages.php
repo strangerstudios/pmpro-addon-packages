@@ -10,6 +10,10 @@
  * Domain Path: /languages
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Load the languages folder for translations.
  */
@@ -39,24 +43,24 @@ function pmproap_post_meta() {
 	global $membership_levels, $post, $wpdb, $pmpro_currency_symbol, $pmpro_page_levels;
 
 	if ( empty( $pmpro_page_levels[ $post->ID ] ) ) {
-		$pmpro_page_levels[ $post->ID ] = $wpdb->get_col( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post->ID}'" );
+		$pmpro_page_levels[ $post->ID ] = $wpdb->get_col( $wpdb->prepare( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post->ID ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table.
 	}
 
 	$pmproap_price = get_post_meta( $post->ID, '_pmproap_price', true );
 ?>
-	<input type="hidden" name="pmproap_noncename" id="pmproap_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
+	<input type="hidden" name="pmproap_noncename" id="pmproap_noncename" value="<?php echo esc_attr( wp_create_nonce( plugin_basename( __FILE__ ) ) ); ?>" />
 	<input type="hidden" name="quick_edit" value="true" />
 	<?php if ( $pmproap_price && empty( $pmpro_page_levels[ $post->ID ] ) ) { ?>
-		<p><strong class="pmpro_red"><?php _e( 'Warning: This page is not locked down yet.', 'pmpro-addon-packages' ); ?></strong> <?php _e( 'You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to.', 'pmpro-addon-packages' ); ?></p>
+		<p><strong class="pmpro_red"><?php esc_html_e( 'Warning: This page is not locked down yet.', 'pmpro-addon-packages' ); ?></strong> <?php esc_html_e( 'You must select at least one membership level in the sidebar to the right to restrict access to this page. You can create a free membership level for this purpose if you need to.', 'pmpro-addon-packages' ); ?></p>
 	<?php } elseif ( $pmproap_price ) { ?>
-		<p><strong class="pmpro_green"><?php _e( 'This page is restricted.', 'pmpro-addon-packages' ); ?></strong> <?php printf( __( 'Members will have to pay %s to gain access to this page. To open access to all members, delete the price below then Save/Update this post.', 'pmpro-addon-packages' ), pmpro_formatPrice( $pmproap_price ) ); ?></p>
+		<p><strong class="pmpro_green"><?php esc_html_e( 'This page is restricted.', 'pmpro-addon-packages' ); ?></strong> <?php printf( esc_html__( 'Members will have to pay %s to gain access to this page. To open access to all members, delete the price below then Save/Update this post.', 'pmpro-addon-packages' ), wp_kses_post( pmpro_formatPrice( $pmproap_price ) ) ); ?></p>
 	<?php } else { ?>
-		<p><?php _e( 'To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.', 'pmpro-addon-packages' ); ?></p>
+		<p><?php esc_html_e( 'To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.', 'pmpro-addon-packages' ); ?></p>
 	<?php } ?>
 
 	<div>
-		<label><strong><?php _e( 'Price', 'pmpro-addon-packages' ); ?></strong></label>
-		&nbsp;&nbsp;&nbsp; <?php echo $pmpro_currency_symbol; ?><input type="text" id="pmproap_price" name="pmproap_price" value="<?php echo esc_attr( $pmproap_price ); ?>" />
+		<label><strong><?php esc_html_e( 'Price', 'pmpro-addon-packages' ); ?></strong></label>
+		&nbsp;&nbsp;&nbsp; <?php echo wp_kses_post( $pmpro_currency_symbol ); ?><input type="text" id="pmproap_price" name="pmproap_price" value="<?php echo esc_attr( $pmproap_price ); ?>" />
 	</div>
 <?php
 }
@@ -68,7 +72,7 @@ function pmproap_post_save( $post_id ) {
 		return false;
 	}
 
-	if ( empty( $_POST['quick_edit'] ) || ( ! empty( $_POST['pmproap_noncename'] ) && ! wp_verify_nonce( $_POST['pmproap_noncename'], plugin_basename( __FILE__ ) ) ) ) {
+	if ( empty( $_POST['quick_edit'] ) || ( ! empty( $_POST['pmproap_noncename'] ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pmproap_noncename'] ) ), plugin_basename( __FILE__ ) ) ) ) {
 		return $post_id;
 	}
 
@@ -86,7 +90,7 @@ function pmproap_post_save( $post_id ) {
 
 	// OK, we're authenticated: we need to find and save the data
 	if ( isset( $_POST['pmproap_price'] ) ) {
-		$mydata = preg_replace( '[^0-9\.]', '', $_POST['pmproap_price'] );
+		$mydata = preg_replace( '[^0-9\.]', '', sanitize_text_field( $_POST['pmproap_price'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Saved with update_post_meta(), which unslashes.
 	}
 
 	update_post_meta( $post_id, '_pmproap_price', $mydata );
@@ -164,7 +168,7 @@ function pmproap_isPostLocked( $post_id ) {
 
 	// has a membership level
 	if ( empty( $pmpro_page_levels[ $post_id ] ) ) {
-		$pmpro_page_levels[ $post_id ] = $wpdb->get_col( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post_id}'" );
+		$pmpro_page_levels[ $post_id ] = $wpdb->get_col( $wpdb->prepare( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table.
 	}
 
 	if ( empty( $pmpro_page_levels[ $post_id ] ) ) {
@@ -418,8 +422,8 @@ function pmproap_getLevelIDForCheckoutLink( $post_id = null, $user_id = null ) {
  * @return string
  */
 function pmproap_checkout_login_redirect( $redirect_link ) {
-	if ( ! empty( $_REQUEST['ap'] ) ) {
-		$redirect_link .= '&ap=' . $_REQUEST['ap'];
+	if ( ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; carries the post ID through the login redirect.
+		$redirect_link .= '&ap=' . intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; see above.
 	}
 	return $redirect_link;
 }
@@ -429,8 +433,8 @@ add_filter( 'pmpro_checkout_login_redirect', 'pmproap_checkout_login_redirect' )
  * Add ap to PayPal Express return url parameters
  */
 function pmproap_pmpro_paypal_express_return_url_parameters( $params ) {
-	if ( ! empty( $_REQUEST['ap'] ) ) {
-		$params['ap'] = isset( $_REQUEST['ap'] ) ? intval( $_REQUEST['ap'] ) : null;
+	if ( ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; builds the PayPal Express return URL.
+		$params['ap'] = isset( $_REQUEST['ap'] ) ? intval( $_REQUEST['ap'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; see above.
 	}
 	return $params;
 }
@@ -473,8 +477,8 @@ function pmproap_pmpro_checkout_level( $level ) {
 	}
 
 	// are we purchasing a post?
-	if ( isset( $_REQUEST['ap'] ) && ! empty( $_REQUEST['ap'] ) ) {
-		$ap = intval( $_REQUEST['ap'] );
+	if ( isset( $_REQUEST['ap'] ) && ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; adjusts the displayed checkout level.
+		$ap = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; see above.
 		$ap_post = get_post( $ap );
 		$pmproap_price = get_post_meta( $ap, '_pmproap_price', true );
 
@@ -528,8 +532,8 @@ function pmproap_get_addon_price_at_checkout() {
 	$price = 0;
 
 	// Get the price for the addon package if there is one set.
-	if ( isset( $_REQUEST['ap'] ) && ! empty( $_REQUEST['ap'] ) ) {
-		$ap            = intval( $_REQUEST['ap'] );
+	if ( isset( $_REQUEST['ap'] ) && ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only price lookup.
+		$ap            = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only price lookup.
 		$ap_post       = get_post( $ap );
 		$pmproap_price = get_post_meta( $ap, '_pmproap_price', true );
 		if ( ! empty( $pmproap_price ) ) {
@@ -609,7 +613,7 @@ if ( ! function_exists( 'pmproap_pmpro_checkout_boxes' ) ) {
 	function pmproap_pmpro_checkout_boxes() {
 		if ( ! empty( pmproap_get_addon_price_at_checkout() ) ) {
 			?>
-			<input type="hidden" name="ap" value="<?php echo esc_attr( $_REQUEST['ap'] ); ?>"/>
+			<input type="hidden" name="ap" value="<?php echo esc_attr( intval( $_REQUEST['ap'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- Read-only; only reached when pmproap_get_addon_price_at_checkout() found a non-empty ap. ?>"/>
 			<?php
 		}
 	}
@@ -628,9 +632,9 @@ if ( ! function_exists( 'pmproap_pmpro_after_checkout' ) ) {
 		global $pmproap_ap;
 		if ( ! empty( $_SESSION['ap'] ) ) {
 			$pmproap_ap = intval( $_SESSION['ap'] );
-			unsset( $_SESSION['ap'] );
-		} elseif ( ! empty( $_REQUEST['ap'] ) ) {
-			$pmproap_ap = intval( $_REQUEST['ap'] );
+			unset( $_SESSION['ap'] );
+		} elseif ( ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_after_checkout; PMPro core verifies the checkout nonce before this fires.
+			$pmproap_ap = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See above.
 		}
 
 		if ( ! empty( $pmproap_ap ) ) {
@@ -674,7 +678,7 @@ function pmproap_pmpro_checkout_level_have_it( $level ) {
 
 	// only checkout page, with ap passed in, and have the level checking out for
 	if ( is_page( $pmpro_pages['checkout'] ) &&
-		! empty( $_REQUEST['ap'] ) &&
+		! empty( $_REQUEST['ap'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display check.
 		pmpro_hasMembershipLevel( $level->id )
 	) {
 		$level->description = '';
@@ -697,7 +701,7 @@ function pmproap_gettext_you_have_selected( $translated_text, $text, $domain ) {
 	global $pmpro_pages;
 	// only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
 	if ( ! empty( $pmpro_pages ) && is_page( $pmpro_pages['checkout'] ) &&
-		! empty( $_REQUEST['ap'] ) &&
+		! empty( $_REQUEST['ap'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display check.
 		$domain == 'paid-memberships-pro' &&
 		strpos( $text, 'have selected' ) !== false ) {
 		// Get the level being purchased.
@@ -723,7 +727,7 @@ function pmproap_pmpro_level_cost_text( $text, $level ) {
 	global $pmpro_pages;
 	// only checkout page, with ap passed in, and have the level checking out for
 	if ( is_page( $pmpro_pages['checkout'] ) &&
-		! empty( $_REQUEST['ap'] ) &&
+		! empty( $_REQUEST['ap'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display check.
 		pmpro_hasMembershipLevel( $level->id ) ) {
 		$text = str_replace( __( 'The price for membership', 'pmpro-addon-packages' ), __( 'The price', 'pmpro-addon-packages' ), $text );
 		$text = str_replace( __( ' now', 'pmpro-addon-packages' ), '', $text );
@@ -740,16 +744,16 @@ add_filter( 'pmpro_level_cost_text', 'pmproap_pmpro_level_cost_text', 10, 2 );
 function pmproap_pmpro_added_order( $order ) {
 	global $pmpro_pages;
 
-	if ( is_page( $pmpro_pages['checkout'] ) && ! empty( $_REQUEST['ap'] ) ) {
+	if ( is_page( $pmpro_pages['checkout'] ) && ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_added_order during checkout; PMPro core verifies the checkout nonce.
 		global $wpdb;
-		$post = get_post( intval( $_REQUEST['ap'] ) );
+		$post = get_post( intval( $_REQUEST['ap'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See above.
 		$order->notes .= 'Addon Package: ' . $post->post_title . ' (#' . $post->ID . ")\n";
 		$sqlQuery = $wpdb->prepare(
 			"UPDATE {$wpdb->pmpro_membership_orders} SET notes = %s WHERE id = %d LIMIT 1",
 			$order->notes,
 			$order->id
 		);
-		$wpdb->query( $sqlQuery );
+		$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Prepared above; PMPro custom table.
 	}
 
 	return $order;
@@ -772,8 +776,8 @@ add_filter( 'pmpro_orders_csv_extra_columns', 'pmproap_pmpro_orders_csv_extra_co
  * Update the confirmation page to have a link to the purchased page.
  */
 function pmproap_pmpro_confirmation_message( $message ) {
-	if ( ! empty( $_REQUEST['ap'] ) ) {
-		$ap = $_REQUEST['ap'];
+	if ( ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only confirmation message.
+		$ap = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only confirmation message.
 		$ap_post = get_post( $ap );
 
 		$message .= '<p class="pmproap_confirmation">' . sprintf( __( 'Continue on to %s.', 'pmpro-addon-packages' ), '<a href="' . get_permalink( $ap_post->ID ) . '">' . $ap_post->post_title . '</a>' ) . '</p>';
@@ -801,13 +805,13 @@ function pmproap_pmpro_member_links_top() {
 			}
 			?>
 			<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
-				<a href="<?php echo get_permalink( $post_id ); ?>"><?php echo $apost->post_title; ?></a>
+				<a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>"><?php echo esc_html( $apost->post_title ); ?></a>
 				<?php
 					// Get the expiration date for the Addon Package.
 					$pmproap_ap_exp_date = get_user_meta( $user_id, 'pmproap_post_id_' . $post_id . '_exp_date', true );
 
 					if ( ! empty( $pmproap_ap_exp_date ) ) {
-						printf( __( '(Access expires on %s)', 'pmpro-addon-packages' ), esc_html( date_i18n( get_option( 'date_format' ), $pmproap_ap_exp_date ) ) );
+						printf( esc_html__( '(Access expires on %s)', 'pmpro-addon-packages' ), esc_html( date_i18n( get_option( 'date_format' ), $pmproap_ap_exp_date ) ) );
 					}
 				?>
 			</li>
@@ -884,7 +888,7 @@ function pmproap_profile_fields( $user_id ) {
 		return false;
 	}
 ?>
-<h2><?php _e( 'Purchased Addon Packages', 'pmpro-addon-packages' ); ?></h2>
+<h2><?php esc_html_e( 'Purchased Addon Packages', 'pmpro-addon-packages' ); ?></h2>
 <table class="form-table">
 	<?php
 		$user_posts = get_user_meta( $user_id, '_pmproap_posts', true );
@@ -904,9 +908,9 @@ function pmproap_profile_fields( $user_id ) {
 						$upost->post_title = sprintf( __( '[Deleted Post with ID#%s]', 'pmpro-addon-packages' ), $upost_id );
 					}
 					?>
-						<span id="pmproap_remove_span_<?php echo $upost->ID; ?>">
-						<a target="_blank" href="<?php echo esc_attr( get_permalink( $upost->ID ) ); ?>"><?php echo $upost->post_title; ?></a>
-						&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo $upost->ID; ?>" class="pmproap_remove" href="javascript:void(0);"><?php _e( 'remove', 'pmpro-addon-packages' ); ?></a>
+						<span id="pmproap_remove_span_<?php echo esc_attr( $upost->ID ); ?>">
+						<a target="_blank" href="<?php echo esc_attr( get_permalink( $upost->ID ) ); ?>"><?php echo esc_html( $upost->post_title ); ?></a>
+						&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo esc_attr( $upost->ID ); ?>" class="pmproap_remove" href="javascript:void(0);"><?php esc_html_e( 'remove', 'pmpro-addon-packages' ); ?></a>
 						</span>
 										</td>
 			</tr>
@@ -915,15 +919,15 @@ function pmproap_profile_fields( $user_id ) {
 	}
 	?>
 	<tr>
-		<th><?php _e( 'Give this User a Package', 'pmpro-addon-packages' ); ?></th>
+		<th><?php esc_html_e( 'Give this User a Package', 'pmpro-addon-packages' ); ?></th>
 		<td>
-			<input type="text" id="new_pmproap_posts_1" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e( 'Enter a post/page ID', 'pmpro-addon-packages' ); ?></small>
+			<input type="text" id="new_pmproap_posts_1" name="new_pmproap_posts[]" size="10" value="" /> <small><?php esc_html_e( 'Enter a post/page ID', 'pmpro-addon-packages' ); ?></small>
 		</td>
 	</tr>
 	<tr id="pmproap_add_tr">
 		<th></th>
 		<td>
-			<a id="pmproap_add" href="javascript:void(0);"><?php _e( '+ Add Another', 'pmpro-addon-packages' ); ?></a>
+			<a id="pmproap_add" href="javascript:void(0);"><?php esc_html_e( '+ Add Another', 'pmpro-addon-packages' ); ?></a>
 		</td>
 	</tr>
 </table>
@@ -934,7 +938,7 @@ function pmproap_profile_fields( $user_id ) {
 		//too add another text input for a new package
 		jQuery('#pmproap_add').click(function() {
 			npmproap_adds++;
-			jQuery('#pmproap_add_tr').before('<tr><th></th><td><input type="text" id="new_pmproap_posts_' + npmproap_adds + '" name="new_pmproap_posts[]" size="10" value="" /> <small><?php _e( 'Enter a post/page ID', 'pmpro-addon-packages' ); ?></small></td></tr>');
+			jQuery('#pmproap_add_tr').before('<tr><th></th><td><input type="text" id="new_pmproap_posts_' + npmproap_adds + '" name="new_pmproap_posts[]" size="10" value="" /> <small><?php esc_html_e( 'Enter a post/page ID', 'pmpro-addon-packages' ); ?></small></td></tr>');
 		});
 
 			//removing a package
@@ -971,7 +975,7 @@ function pmproap_profile_fields_update() {
 
 		// adding
 		if ( is_array( $_REQUEST['new_pmproap_posts'] ) ) {
-			foreach ( $_REQUEST['new_pmproap_posts'] as $post_id ) {
+			foreach ( $_REQUEST['new_pmproap_posts'] as $post_id ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each value is cast with intval() below.
 				$post_id = intval( $post_id );
 				if ( ! empty( $post_id ) ) {
 					pmproap_addMemberToPost( $user_ID, $post_id );
@@ -982,7 +986,7 @@ function pmproap_profile_fields_update() {
 		// remove
 		if ( ! empty( $_REQUEST['remove_pmproap_posts'] ) ) {
 			// convert to array
-			$post_ids = explode( ',', $_REQUEST['remove_pmproap_posts'] );
+			$post_ids = explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['remove_pmproap_posts'] ) ) );
 			foreach ( $post_ids as $post_id ) {
 				$post_id = intval( $post_id );
 				if ( ! empty( $post_id ) ) {

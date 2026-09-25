@@ -1,4 +1,8 @@
 <?php 
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	//archives page for add on packages using [pmpro_addon_packages] shortcode
 	function pmpro_addon_packages_shortcode( $atts, $content=null, $code="" ) {
 		// $atts    ::= array of attributes
@@ -116,7 +120,7 @@
 						{
 							$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);																				
 							?>
-							<tr id="pmpro_addon_package-<?php echo $post->ID; ?>" class="pmpro_addon_package">
+							<tr id="pmpro_addon_package-<?php echo esc_attr( $post->ID ); ?>" class="pmpro_addon_package">
 							<?php 
 								if ( has_post_thumbnail() && !empty($thumbnail))
 								{					
@@ -124,9 +128,9 @@
 									<td width="15%" class="pmpro_addon_package-thumbnail">
 									<?php	
 										if($link)
-											echo '<a href="' . get_permalink() . '">' . get_the_post_thumbnail($post->ID, $thumbnail) . '</a>';
+											echo '<a href="' . esc_url( get_permalink() ) . '">' . get_the_post_thumbnail($post->ID, $thumbnail) . '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_the_post_thumbnail() returns core-generated image markup.
 										else
-											echo get_the_post_thumbnail($post->ID, $thumbnail);
+											echo get_the_post_thumbnail($post->ID, $thumbnail); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_the_post_thumbnail() returns core-generated image markup.
 									?>
 									</td>
 									<?php
@@ -136,9 +140,9 @@
 									<h2>
 									<?php 
 										if(!empty($link))
-											echo '<a href="' . get_permalink() . '">' . get_the_title() . '</a>';
+											echo '<a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a>';
 										else
-											echo get_the_title();
+											echo esc_html( get_the_title() );
 									?>
 									</h2>									
 								</td>
@@ -146,7 +150,7 @@
 									if(!empty($current_user->ID) && pmproap_hasAccess($current_user->ID,$post->ID))
 									{
 										?>
-										<td width="25%" class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php echo the_permalink(); ?>"><?php echo $view_button; ?></a></td>
+										<td width="25%" class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php the_permalink(); ?>"><?php echo esc_html( $view_button ); ?></a></td>
 										<?php
 									}
 									else
@@ -160,16 +164,16 @@
 
 										if(empty($text_level_id)) {																		
 											?>
-												<a class="pmpro_btn" href="<?php echo pmpro_url( "levels" ); ?>">
-													<?php echo $levels_button;?>
+												<a class="pmpro_btn" href="<?php echo esc_url( pmpro_url( "levels" ) ); ?>">
+													<?php echo esc_html( $levels_button );?>
 												</a>
 											<?php
 										} else {										
 											//what's the price
 											$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
 											?>
-												<a class="pmpro_btn" href="<?php echo pmpro_url( "checkout", "?level=" . $text_level_id . "&ap=" . $post->ID ); ?>">
-													<?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice( $pmproap_price ); ?></span>
+												<a class="pmpro_btn" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $text_level_id . "&ap=" . $post->ID ) ); ?>">
+													<?php echo esc_html( $checkout_button ); ?> &mdash; <span class="pmpro_addon_package-price"><?php echo wp_kses_post( pmpro_formatPrice( $pmproap_price ) ); ?></span>
 												</a>
 											<?php
 										}
@@ -206,7 +210,7 @@
 									else
 										echo '12 ';?>
 								columns">
-									<article id="pmpro_addon_package-<?php echo $post->ID; ?>" class="<?php echo implode(" ", get_post_class()); ?> pmpro_addon_package">							
+									<article id="pmpro_addon_package-<?php echo esc_attr( $post->ID ); ?>" class="<?php echo esc_attr( implode(" ", get_post_class()) ); ?> pmpro_addon_package">							
 										<header class="entry-header"><h2 class="entry-title pmpro_addon_package-title">
 										<?php 
 											if ( has_post_thumbnail() && !empty($thumbnail))
@@ -216,14 +220,14 @@
 												else
 													$thumbnail_class = "alignright";
 												if($link)
-													echo '<a href="' . get_permalink() . '">' . get_the_post_thumbnail($post->ID, $thumbnail, array('class' => $thumbnail_class)) . '</a>';
+													echo '<a href="' . esc_url( get_permalink() ) . '">' . get_the_post_thumbnail($post->ID, $thumbnail, array('class' => $thumbnail_class)) . '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_the_post_thumbnail() returns core-generated image markup.
 												else
-													echo get_the_post_thumbnail($post->ID, $thumbnail, array('class' => $thumbnail_class));
+													echo get_the_post_thumbnail($post->ID, $thumbnail, array('class' => $thumbnail_class)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_the_post_thumbnail() returns core-generated image markup.
 											}
 											if(!empty($link))
-												echo '<a href="' . get_permalink() . '">' . get_the_title() . '</a>';
+												echo '<a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a>';
 											else
-												echo get_the_title();
+												echo esc_html( get_the_title() );
 										?>									
 										</h2></header>
 										<div class="entry-content">																		
@@ -231,7 +235,7 @@
 												if(!empty($current_user->ID) && pmproap_hasAccess($current_user->ID,$post->ID))
 												{
 													?>
-													<p class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php echo the_permalink(); ?>"><?php echo $view_button; ?></a></p>
+													<p class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php the_permalink(); ?>"><?php echo esc_html( $view_button ); ?></a></p>
 													<?php
 												}
 												else
@@ -241,13 +245,13 @@
 													
 													if(empty($text_level_id)) {																	
 														?>															
-														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("levels"); ?>"><?php echo $levels_button; ?></a></p>
+														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo esc_url( pmpro_url("levels") ); ?>"><?php echo esc_html( $levels_button ); ?></a></p>
 														<?php
 													} else {													
 														//what's the price
 														$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);														
 														?>
-														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID); ?>"><?php echo $checkout_button; ?> &mdash; <span class="pmpro_addon_package-price"><?php echo pmpro_formatPrice($pmproap_price); ?></span></a></p>
+														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo esc_url( pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) ); ?>"><?php echo esc_html( $checkout_button ); ?> &mdash; <span class="pmpro_addon_package-price"><?php echo wp_kses_post( pmpro_formatPrice($pmproap_price) ); ?></span></a></p>
 														<?php
 													}
 												}
@@ -267,7 +271,7 @@
 		}
 	else
 	{
-		_e('No add on packages found.','pmpro-addon-packages');
+		esc_html_e('No add on packages found.','pmpro-addon-packages');
 	}		
 	$temp_content = ob_get_contents();
 	ob_end_clean();
