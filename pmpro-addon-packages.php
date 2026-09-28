@@ -928,6 +928,7 @@ function pmproap_profile_fields( $user_id ) {
 	</tr>
 </table>
 <input type="hidden" id="remove_pmproap_posts" name="remove_pmproap_posts" value="" />
+<?php wp_nonce_field( 'pmproap_profile_fields_update', 'pmproap_profile_fields_nonce', false ); ?>
 <script>
 	var npmproap_adds = 1;
 	jQuery(function() {
@@ -957,6 +958,16 @@ function pmproap_profile_fields( $user_id ) {
  */
 function pmproap_profile_fields_update() {
 	if ( isset( $_REQUEST['new_pmproap_posts'] ) || isset( $_REQUEST['remove_pmproap_posts'] ) ) {
+		// Only users who can see the package fields can save them.
+		if ( ! current_user_can( 'administrator' ) ) {
+			return false;
+		}
+
+		// Check the nonce output with the package fields.
+		if ( ! isset( $_REQUEST['pmproap_profile_fields_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['pmproap_profile_fields_nonce'] ) ), 'pmproap_profile_fields_update' ) ) {
+			return false;
+		}
+
 		// get the user id
 		global $wpdb, $current_user, $user_ID;
 		wp_get_current_user();
