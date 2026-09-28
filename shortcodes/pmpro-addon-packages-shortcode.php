@@ -140,9 +140,9 @@
 									<h2>
 									<?php 
 										if(!empty($link))
-											echo '<a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a>';
+											echo '<a href="' . esc_url( get_permalink() ) . '">' . wp_kses_post( get_the_title() ) . '</a>';
 										else
-											echo esc_html( get_the_title() );
+											echo wp_kses_post( get_the_title() );
 									?>
 									</h2>									
 								</td>
@@ -150,7 +150,7 @@
 									if(!empty($current_user->ID) && pmproap_hasAccess($current_user->ID,$post->ID))
 									{
 										?>
-										<td width="25%" class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php the_permalink(); ?>"><?php echo esc_html( $view_button ); ?></a></td>
+										<td width="25%" class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php the_permalink(); ?>"><?php echo wp_kses_post( $view_button ); ?></a></td>
 										<?php
 									}
 									else
@@ -165,7 +165,7 @@
 										if(empty($text_level_id)) {																		
 											?>
 												<a class="pmpro_btn" href="<?php echo esc_url( pmpro_url( "levels" ) ); ?>">
-													<?php echo esc_html( $levels_button );?>
+													<?php echo wp_kses_post( $levels_button );?>
 												</a>
 											<?php
 										} else {										
@@ -173,7 +173,7 @@
 											$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);
 											?>
 												<a class="pmpro_btn" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $text_level_id . "&ap=" . $post->ID ) ); ?>">
-													<?php echo esc_html( $checkout_button ); ?> &mdash; <span class="pmpro_addon_package-price"><?php echo wp_kses_post( pmpro_formatPrice( $pmproap_price ) ); ?></span>
+													<?php echo wp_kses_post( $checkout_button ); ?> &mdash; <span class="pmpro_addon_package-price"><?php echo wp_kses_post( pmpro_formatPrice( $pmproap_price ) ); ?></span>
 												</a>
 											<?php
 										}
@@ -225,9 +225,9 @@
 													echo get_the_post_thumbnail($post->ID, $thumbnail, array('class' => $thumbnail_class)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_the_post_thumbnail() returns core-generated image markup.
 											}
 											if(!empty($link))
-												echo '<a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a>';
+												echo '<a href="' . esc_url( get_permalink() ) . '">' . wp_kses_post( get_the_title() ) . '</a>';
 											else
-												echo esc_html( get_the_title() );
+												echo wp_kses_post( get_the_title() );
 										?>									
 										</h2></header>
 										<div class="entry-content">																		
@@ -235,7 +235,7 @@
 												if(!empty($current_user->ID) && pmproap_hasAccess($current_user->ID,$post->ID))
 												{
 													?>
-													<p class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php the_permalink(); ?>"><?php echo esc_html( $view_button ); ?></a></p>
+													<p class="pmpro_addon_package-view"><a class="pmpro_btn" href="<?php the_permalink(); ?>"><?php echo wp_kses_post( $view_button ); ?></a></p>
 													<?php
 												}
 												else
@@ -245,13 +245,13 @@
 													
 													if(empty($text_level_id)) {																	
 														?>															
-														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo esc_url( pmpro_url("levels") ); ?>"><?php echo esc_html( $levels_button ); ?></a></p>
+														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo esc_url( pmpro_url("levels") ); ?>"><?php echo wp_kses_post( $levels_button ); ?></a></p>
 														<?php
 													} else {													
 														//what's the price
 														$pmproap_price = get_post_meta($post->ID, "_pmproap_price", true);														
 														?>
-														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo esc_url( pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) ); ?>"><?php echo esc_html( $checkout_button ); ?> &mdash; <span class="pmpro_addon_package-price"><?php echo wp_kses_post( pmpro_formatPrice($pmproap_price) ); ?></span></a></p>
+														<p class="pmpro_addon_package-buy"><a class="pmpro_btn" href="<?php echo esc_url( pmpro_url("checkout", "?level=" . $text_level_id . "&ap=" . $post->ID) ); ?>"><?php echo wp_kses_post( $checkout_button ); ?> &mdash; <span class="pmpro_addon_package-price"><?php echo wp_kses_post( pmpro_formatPrice($pmproap_price) ); ?></span></a></p>
 														<?php
 													}
 												}

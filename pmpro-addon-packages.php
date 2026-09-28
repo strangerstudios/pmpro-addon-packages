@@ -805,7 +805,7 @@ function pmproap_pmpro_member_links_top() {
 			}
 			?>
 			<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
-				<a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>"><?php echo esc_html( $apost->post_title ); ?></a>
+				<a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>"><?php echo wp_kses_post( $apost->post_title ); ?></a>
 				<?php
 					// Get the expiration date for the Addon Package.
 					$pmproap_ap_exp_date = get_user_meta( $user_id, 'pmproap_post_id_' . $post_id . '_exp_date', true );
@@ -909,7 +909,7 @@ function pmproap_profile_fields( $user_id ) {
 					}
 					?>
 						<span id="pmproap_remove_span_<?php echo esc_attr( $upost->ID ); ?>">
-						<a target="_blank" href="<?php echo esc_attr( get_permalink( $upost->ID ) ); ?>"><?php echo esc_html( $upost->post_title ); ?></a>
+						<a target="_blank" href="<?php echo esc_attr( get_permalink( $upost->ID ) ); ?>"><?php echo wp_kses_post( $upost->post_title ); ?></a>
 						&nbsp; <a style="color: red;" id="pmproap_remove_<?php echo esc_attr( $upost->ID ); ?>" class="pmproap_remove" href="javascript:void(0);"><?php esc_html_e( 'remove', 'pmpro-addon-packages' ); ?></a>
 						</span>
 										</td>
