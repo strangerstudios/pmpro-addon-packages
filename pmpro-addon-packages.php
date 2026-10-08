@@ -430,6 +430,32 @@ function pmproap_checkout_login_redirect( $redirect_link ) {
 add_filter( 'pmpro_checkout_login_redirect', 'pmproap_checkout_login_redirect' );
 
 /**
+ * When checkout is loaded with ap but no level, use the same level
+ * that the checkout link on the addon package would use.
+ *
+ * @param int $level_id The default level ID for checkout.
+ * @return int
+ */
+function pmproap_pmpro_default_level( $level_id ) {
+	if ( empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; picks the default checkout level.
+		return $level_id;
+	}
+
+	$ap = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; see above.
+	if ( ! pmproap_isPostLocked( $ap ) ) {
+		return $level_id;
+	}
+
+	$ap_level_id = pmproap_getLevelIDForCheckoutLink( $ap, get_current_user_id() );
+	if ( ! empty( $ap_level_id ) ) {
+		$level_id = $ap_level_id;
+	}
+
+	return $level_id;
+}
+add_filter( 'pmpro_default_level', 'pmproap_pmpro_default_level' );
+
+/**
  * Add ap to PayPal Express return url parameters
  */
 function pmproap_pmpro_paypal_express_return_url_parameters( $params ) {
