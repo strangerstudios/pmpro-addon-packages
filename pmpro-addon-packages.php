@@ -180,6 +180,26 @@ function pmproap_isPostLocked( $post_id ) {
 }
 
 /**
+ * Returns true if the post ID is a published Addon Package that can be purchased.
+ *
+ * @param  int $post_id ID of the post to check.
+ * @return bool         Returns true if the post is a valid Addon Package, false if not.
+ */
+function pmproap_is_valid_package( $post_id ) {
+	$post_id = intval( $post_id );
+	if ( empty( $post_id ) ) {
+		return false;
+	}
+
+	$ap_post = get_post( $post_id );
+	if ( empty( $ap_post ) || 'publish' !== $ap_post->post_status ) {
+		return false;
+	}
+
+	return pmproap_isPostLocked( $post_id );
+}
+
+/**
  * Returns true if a user has access to a page.
  *
  * @param  int $user_id  ID of the user to check.
@@ -517,6 +537,22 @@ function pmproap_pmpro_checkout_level( $level ) {
 add_filter( 'pmpro_checkout_level', 'pmproap_pmpro_checkout_level' );
 
 /**
+ * Stop checkout if the ap passed in is not a valid Addon Package.
+ *
+ * @param  bool $continue Whether the checkout should continue.
+ * @return bool           Whether the checkout should continue.
+ */
+function pmproap_pmpro_checkout_checks( $continue ) {
+	if ( $continue && ! empty( $_REQUEST['ap'] ) && ! pmproap_is_valid_package( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Runs during checkout; PMPro core verifies the checkout nonce. Value is cast with intval() in pmproap_is_valid_package().
+		pmpro_setMessage( __( 'The content you are trying to purchase is not available.', 'pmpro-addon-packages' ), 'pmpro_error' );
+		$continue = false;
+	}
+
+	return $continue;
+}
+add_filter( 'pmpro_checkout_checks', 'pmproap_pmpro_checkout_checks' );
+
+/**
  * Helper function to get the addon package price at checkout.
  *
  * @since 0.1
@@ -637,7 +673,7 @@ if ( ! function_exists( 'pmproap_pmpro_after_checkout' ) ) {
 			$pmproap_ap = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See above.
 		}
 
-		if ( ! empty( $pmproap_ap ) ) {
+		if ( ! empty( $pmproap_ap ) && pmproap_is_valid_package( $pmproap_ap ) ) {
 			pmproap_addMemberToPost( $user_id, $pmproap_ap );
 		}
 	}
@@ -744,7 +780,7 @@ add_filter( 'pmpro_level_cost_text', 'pmproap_pmpro_level_cost_text', 10, 2 );
 function pmproap_pmpro_added_order( $order ) {
 	global $pmpro_pages;
 
-	if ( is_page( $pmpro_pages['checkout'] ) && ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_added_order during checkout; PMPro core verifies the checkout nonce.
+	if ( is_page( $pmpro_pages['checkout'] ) && ! empty( $_REQUEST['ap'] ) && pmproap_is_valid_package( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Runs on pmpro_added_order during checkout; PMPro core verifies the checkout nonce. Value is cast with intval() in pmproap_is_valid_package().
 		global $wpdb;
 		$post = get_post( intval( $_REQUEST['ap'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See above.
 		$order->notes .= 'Addon Package: ' . $post->post_title . ' (#' . $post->ID . ")\n";
@@ -776,11 +812,11 @@ add_filter( 'pmpro_orders_csv_extra_columns', 'pmproap_pmpro_orders_csv_extra_co
  * Update the confirmation page to have a link to the purchased page.
  */
 function pmproap_pmpro_confirmation_message( $message ) {
-	if ( ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only confirmation message.
+	if ( ! empty( $_REQUEST['ap'] ) && pmproap_is_valid_package( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Read-only confirmation message. Value is cast with intval() in pmproap_is_valid_package().
 		$ap = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only confirmation message.
 		$ap_post = get_post( $ap );
 
-		$message .= '<p class="pmproap_confirmation">' . sprintf( __( 'Continue on to %s.', 'pmpro-addon-packages' ), '<a href="' . get_permalink( $ap_post->ID ) . '">' . $ap_post->post_title . '</a>' ) . '</p>';
+		$message .= '<p class="pmproap_confirmation">' . sprintf( __( 'Continue on to %s.', 'pmpro-addon-packages' ), '<a href="' . esc_url( get_permalink( $ap_post->ID ) ) . '">' . esc_html( $ap_post->post_title ) . '</a>' ) . '</p>';
 	}
 	return $message;
 }
