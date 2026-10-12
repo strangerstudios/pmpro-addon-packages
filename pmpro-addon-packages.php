@@ -677,7 +677,7 @@ function pmproap_pmpro_checkout_level_have_it( $level ) {
 	}
 
 	// only checkout page, with ap passed in, and have the level checking out for
-	if ( is_page( $pmpro_pages['checkout'] ) &&
+	if ( ! empty( $pmpro_pages['checkout'] ) && is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display check.
 		pmpro_hasMembershipLevel( $level->id )
 	) {
@@ -700,7 +700,7 @@ add_filter( 'pmpro_checkout_level', 'pmproap_pmpro_checkout_level_have_it' );
 function pmproap_gettext_you_have_selected( $translated_text, $text, $domain ) {
 	global $pmpro_pages;
 	// only checkout page, with ap passed in, and "you have selected..." string, and have the level checking out for
-	if ( ! empty( $pmpro_pages ) && is_page( $pmpro_pages['checkout'] ) &&
+	if ( ! empty( $pmpro_pages['checkout'] ) && is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display check.
 		$domain == 'paid-memberships-pro' &&
 		strpos( $text, 'have selected' ) !== false ) {
@@ -726,7 +726,7 @@ add_filter( 'gettext', 'pmproap_gettext_you_have_selected', 10, 3 );
 function pmproap_pmpro_level_cost_text( $text, $level ) {
 	global $pmpro_pages;
 	// only checkout page, with ap passed in, and have the level checking out for
-	if ( is_page( $pmpro_pages['checkout'] ) &&
+	if ( ! empty( $pmpro_pages['checkout'] ) && is_page( $pmpro_pages['checkout'] ) &&
 		! empty( $_REQUEST['ap'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display check.
 		pmpro_hasMembershipLevel( $level->id ) ) {
 		$text = str_replace( __( 'The price for membership', 'pmpro-addon-packages' ), __( 'The price', 'pmpro-addon-packages' ), $text );
@@ -744,7 +744,7 @@ add_filter( 'pmpro_level_cost_text', 'pmproap_pmpro_level_cost_text', 10, 2 );
 function pmproap_pmpro_added_order( $order ) {
 	global $pmpro_pages;
 
-	if ( is_page( $pmpro_pages['checkout'] ) && ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_added_order during checkout; PMPro core verifies the checkout nonce.
+	if ( ! empty( $pmpro_pages['checkout'] ) && is_page( $pmpro_pages['checkout'] ) && ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Runs on pmpro_added_order during checkout; PMPro core verifies the checkout nonce.
 		global $wpdb;
 		$post = get_post( intval( $_REQUEST['ap'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See above.
 		$order->notes .= 'Addon Package: ' . $post->post_title . ' (#' . $post->ID . ")\n";
