@@ -522,11 +522,7 @@ add_filter( 'pmpro_checkout_level', 'pmproap_pmpro_checkout_level' );
  * @since 0.1
  */
 function pmproap_get_addon_price_at_checkout() {
-	// Cache value to avoid multiple calls.
-	static $price = null;
-	if ( ! is_null( $price ) ) {
-		return $price;
-	}
+	// Not cached: a request can complete more than one checkout. The post meta lookup is cached by WordPress.
 
 	// Default price to 0.
 	$price = 0;
@@ -553,7 +549,10 @@ if ( ! function_exists( 'pmproap_pmpro_cancel_previous_subscriptions' ) ) {
 	 * @param bool $cancel Whether to cancel the previous subscription.
 	 */
 	function pmproap_pmpro_cancel_previous_subscriptions( $cancel ) {
-		if ( ! empty( pmproap_get_addon_price_at_checkout() ) ) {
+		global $pmproap_package_only_checkout;
+
+		// Only keep the subscription when buying a package for a level the member already had.
+		if ( ! empty( $pmproap_package_only_checkout ) ) {
 			return false;
 		} else {
 			return $cancel;
@@ -561,6 +560,71 @@ if ( ! function_exists( 'pmproap_pmpro_cancel_previous_subscriptions' ) ) {
 	}
 }
 add_filter( 'pmpro_cancel_previous_subscriptions', 'pmproap_pmpro_cancel_previous_subscriptions' );
+
+/**
+ * Before checkout changes memberships, remember if this is a package-only purchase:
+ * a priced package for a level the purchaser already holds.
+ *
+ * This can't be decided inside pmpro_cancel_previous_subscriptions: by then core has already
+ * marked the held level's row "changed". Uses the checkout's user, so webhooks work too.
+ *
+ * @since TBD
+ *
+ * @param int    $user_id The user checking out.
+ * @param object $morder  The checkout order.
+ */
+function pmproap_pmpro_checkout_before_change_membership_level( $user_id, $morder ) {
+	global $pmproap_package_only_checkout;
+	$pmproap_package_only_checkout = null;
+
+	$user_id  = (int) $user_id;
+	$level_id = empty( $morder->membership_id ) ? 0 : (int) $morder->membership_id;
+	if ( $user_id < 1 || $level_id < 1 || empty( pmproap_get_addon_price_at_checkout() ) ) {
+		return;
+	}
+
+	// Use the purchaser's active memberships, not an access check that other Add Ons may filter.
+	$levels = pmpro_getMembershipLevelsForUser( $user_id );
+	if ( ! empty( $levels ) && in_array( $level_id, array_map( 'intval', wp_list_pluck( $levels, 'id' ) ), true ) ) {
+		$pmproap_package_only_checkout = array(
+			'user_id'  => $user_id,
+			'level_id' => $level_id,
+		);
+	}
+}
+add_action( 'pmpro_checkout_before_change_membership_level', 'pmproap_pmpro_checkout_before_change_membership_level', 1, 2 );
+
+/**
+ * Forget the package-only decision once the checkout's own membership change is done.
+ * Other membership changes in the same request (e.g. made by another Add On) don't count.
+ *
+ * @since TBD
+ *
+ * @param int $level_id The level the user was changed to.
+ * @param int $user_id  The user whose membership changed.
+ */
+function pmproap_clear_package_only_checkout( $level_id, $user_id ) {
+	global $pmproap_package_only_checkout;
+	if ( ! empty( $pmproap_package_only_checkout )
+		&& (int) $user_id === $pmproap_package_only_checkout['user_id']
+		&& (int) $level_id === $pmproap_package_only_checkout['level_id'] ) {
+		$pmproap_package_only_checkout = null;
+	}
+}
+add_action( 'pmpro_after_change_membership_level', 'pmproap_clear_package_only_checkout', 1, 2 );
+
+/**
+ * Also forget it after the checkout, in case the level change didn't report it.
+ *
+ * @since TBD
+ *
+ * @param int    $user_id The user who checked out.
+ * @param object $morder  The checkout order.
+ */
+function pmproap_pmpro_after_checkout_clear_package_only( $user_id, $morder = null ) {
+	pmproap_clear_package_only_checkout( empty( $morder->membership_id ) ? 0 : $morder->membership_id, $user_id );
+}
+add_action( 'pmpro_after_checkout', 'pmproap_pmpro_after_checkout_clear_package_only', 1, 2 );
 
 if ( ! function_exists( 'pmproap_pmpro_checkout_end_date' ) ) {
 	/**
