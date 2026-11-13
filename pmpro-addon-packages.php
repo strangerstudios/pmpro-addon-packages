@@ -111,7 +111,7 @@ function pmproap_post_save( $post_id ) {
 
 	// OK, we're authenticated: we need to find and save the data
 	if ( isset( $_POST['pmproap_price'] ) ) {
-		$mydata = preg_replace( '[^0-9\.]', '', sanitize_text_field( $_POST['pmproap_price'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Saved with update_post_meta(), which unslashes.
+		$mydata = preg_replace( '/[^0-9.,]/', '', sanitize_text_field( $_POST['pmproap_price'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Saved with update_post_meta(), which unslashes.
 		update_post_meta( $post_id, '_pmproap_price', $mydata );
 		return $mydata;
 	}
