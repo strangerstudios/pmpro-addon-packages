@@ -675,6 +675,9 @@ if ( ! function_exists( 'pmproap_pmpro_after_checkout' ) ) {
 
 		if ( ! empty( $pmproap_ap ) && pmproap_is_valid_package( $pmproap_ap ) ) {
 			pmproap_addMemberToPost( $user_id, $pmproap_ap );
+		} else {
+			// Keep an invalid ap out of the confirmation URL.
+			$pmproap_ap = null;
 		}
 	}
 }
