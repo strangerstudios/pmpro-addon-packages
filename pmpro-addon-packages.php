@@ -93,7 +93,7 @@ function pmproap_post_save( $post_id ) {
 		return false;
 	}
 
-	if ( empty( $_POST['quick_edit'] ) || ( ! empty( $_POST['pmproap_noncename'] ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pmproap_noncename'] ) ), plugin_basename( __FILE__ ) ) ) ) {
+	if ( empty( $_POST['quick_edit'] ) || empty( $_POST['pmproap_noncename'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pmproap_noncename'] ) ), plugin_basename( __FILE__ ) ) ) {
 		return $post_id;
 	}
 
@@ -112,11 +112,11 @@ function pmproap_post_save( $post_id ) {
 	// OK, we're authenticated: we need to find and save the data
 	if ( isset( $_POST['pmproap_price'] ) ) {
 		$mydata = preg_replace( '[^0-9\.]', '', sanitize_text_field( $_POST['pmproap_price'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Saved with update_post_meta(), which unslashes.
+		update_post_meta( $post_id, '_pmproap_price', $mydata );
+		return $mydata;
 	}
 
-	update_post_meta( $post_id, '_pmproap_price', $mydata );
-
-	return $mydata;
+	return $post_id;
 }
 add_action( 'save_post', 'pmproap_post_save' );
 
