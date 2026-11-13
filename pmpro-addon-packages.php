@@ -530,7 +530,6 @@ function pmproap_get_addon_price_at_checkout() {
 	// Get the price for the addon package if there is one set.
 	if ( isset( $_REQUEST['ap'] ) && ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only price lookup.
 		$ap            = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only price lookup.
-		$ap_post       = get_post( $ap );
 		$pmproap_price = get_post_meta( $ap, '_pmproap_price', true );
 		if ( ! empty( $pmproap_price ) ) {
 			$price = $pmproap_price;
