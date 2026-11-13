@@ -432,6 +432,7 @@ add_filter( 'pmpro_checkout_login_redirect', 'pmproap_checkout_login_redirect' )
 /**
  * When checkout is loaded with ap but no level, use the same level
  * that the checkout link on the addon package would use.
+ * Falls back to core's default level when no qualifying level is found.
  *
  * @param int $level_id The default level ID for checkout.
  * @return int
