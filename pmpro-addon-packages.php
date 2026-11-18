@@ -65,6 +65,27 @@ function pmproap_post_meta() {
 <?php
 }
 
+/**
+ * Check whether the current user can set the Addon Package price for posts.
+ *
+ * @since TBD
+ *
+ * @return bool
+ */
+function pmproap_current_user_can_edit_price() {
+	/**
+	 * Filter the capability needed to set the Addon Package price for posts.
+	 * Users with manage_options can always set the price.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $capability The capability to check. Default 'pmpro_membershiplevels'.
+	 */
+	$capability = apply_filters( 'pmproap_edit_price_capability', 'pmpro_membershiplevels' );
+
+	return current_user_can( $capability ) || current_user_can( 'manage_options' );
+}
+
 function pmproap_post_save( $post_id ) {
 	global $wpdb;
 
@@ -72,7 +93,7 @@ function pmproap_post_save( $post_id ) {
 		return false;
 	}
 
-	if ( empty( $_POST['quick_edit'] ) || ( ! empty( $_POST['pmproap_noncename'] ) && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pmproap_noncename'] ) ), plugin_basename( __FILE__ ) ) ) ) {
+	if ( empty( $_POST['quick_edit'] ) || empty( $_POST['pmproap_noncename'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pmproap_noncename'] ) ), plugin_basename( __FILE__ ) ) ) {
 		return $post_id;
 	}
 
@@ -84,18 +105,18 @@ function pmproap_post_save( $post_id ) {
 	}
 
 	// Check permissions
-	if ( ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'edit_post', $post_id ) || ! pmproap_current_user_can_edit_price() ) {
 		return $post_id;
 	}
 
 	// OK, we're authenticated: we need to find and save the data
 	if ( isset( $_POST['pmproap_price'] ) ) {
-		$mydata = preg_replace( '[^0-9\.]', '', sanitize_text_field( $_POST['pmproap_price'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Saved with update_post_meta(), which unslashes.
+		$mydata = preg_replace( '/[^0-9.,]/', '', sanitize_text_field( $_POST['pmproap_price'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Saved with update_post_meta(), which unslashes.
+		update_post_meta( $post_id, '_pmproap_price', $mydata );
+		return $mydata;
 	}
 
-	update_post_meta( $post_id, '_pmproap_price', $mydata );
-
-	return $mydata;
+	return $post_id;
 }
 add_action( 'save_post', 'pmproap_post_save' );
 
@@ -103,6 +124,9 @@ add_action( 'save_post', 'pmproap_post_save' );
  * @since v0.7 - Supports Custom Post Type (CPT) posts as add-on package/posts
  */
 function pmproap_post_meta_wrapper() {
+	if ( ! pmproap_current_user_can_edit_price() ) {
+		return;
+	}
 
 	$post_types = apply_filters( 'pmproap_supported_post_types', array( 'page', 'post' ) );
 
