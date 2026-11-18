@@ -502,7 +502,7 @@ function pmproap_pmpro_checkout_level( $level ) {
 		$ap_post = get_post( $ap );
 		$pmproap_price = get_post_meta( $ap, '_pmproap_price', true );
 
-		if ( ! empty( $pmproap_price ) ) {
+		if ( ! empty( $pmproap_price ) && pmproap_is_valid_package( $ap ) ) {
 			if ( pmpro_hasMembershipLevel( $level->id ) ) {
 				// already have the membership, so price is just the ap price
 				$level->initial_payment = $pmproap_price;
@@ -553,6 +553,19 @@ function pmproap_pmpro_checkout_checks( $continue ) {
 add_filter( 'pmpro_checkout_checks', 'pmproap_pmpro_checkout_checks' );
 
 /**
+ * Show the same error when the checkout page first loads, before the user enters any details.
+ * On submit, pmproap_pmpro_checkout_checks() sets the error and stops checkout.
+ */
+function pmproap_pmpro_checkout_preheader_invalid_package() {
+	if ( pmpro_was_checkout_form_submitted() || empty( $_REQUEST['ap'] ) || pmproap_is_valid_package( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Read-only notice. Value is cast with intval() in pmproap_is_valid_package().
+		return;
+	}
+
+	pmpro_setMessage( __( 'The content you are trying to purchase is not available.', 'pmpro-addon-packages' ), 'pmpro_error' );
+}
+add_action( 'pmpro_checkout_preheader', 'pmproap_pmpro_checkout_preheader_invalid_package' );
+
+/**
  * Helper function to get the addon package price at checkout.
  *
  * @since 0.1
@@ -572,7 +585,7 @@ function pmproap_get_addon_price_at_checkout() {
 		$ap            = intval( $_REQUEST['ap'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only price lookup.
 		$ap_post       = get_post( $ap );
 		$pmproap_price = get_post_meta( $ap, '_pmproap_price', true );
-		if ( ! empty( $pmproap_price ) ) {
+		if ( ! empty( $pmproap_price ) && pmproap_is_valid_package( $ap ) ) {
 			$price = $pmproap_price;
 		}
 	}
