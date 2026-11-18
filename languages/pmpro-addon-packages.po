@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro - Addon Packages plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Addon Packages 0.9.3\n"
+"Project-Id-Version: Paid Memberships Pro - Addon Packages 0.9.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-28T16:28:10+00:00\n"
+"POT-Creation-Date: 2026-11-18T17:43:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-addon-packages\n"
@@ -47,12 +47,14 @@ msgstr ""
 
 #: pmpro-addon-packages.php:111
 #: pmpro-addon-packages.php:115
+#: pmpro-addon-packages.php:139
 msgid "PMPro Addon Package Settings"
 msgstr ""
 
 #: pmpro-addon-packages.php:275
 #: pmpro-addon-packages.php:302
 #: pmpro-addon-packages.php:306
+#: pmpro-addon-packages.php:350
 msgid "You must first purchase a membership level before purchasing this content. "
 msgstr ""
 
@@ -63,6 +65,7 @@ msgstr ""
 #: pmpro-addon-packages.php:292
 #: pmpro-addon-packages.php:319
 #: pmpro-addon-packages.php:323
+#: pmpro-addon-packages.php:367
 #, php-format
 msgid "This content requires that you purchase additional access. The price is %1$s or free for our %2$s members."
 msgstr ""
@@ -72,12 +75,15 @@ msgstr ""
 #: pmpro-addon-packages.php:320
 #: pmpro-addon-packages.php:307
 #: pmpro-addon-packages.php:324
+#: pmpro-addon-packages.php:351
+#: pmpro-addon-packages.php:368
 msgid "Choose a Membership Level"
 msgstr ""
 
 #: pmpro-addon-packages.php:293
 #: pmpro-addon-packages.php:320
 #: pmpro-addon-packages.php:324
+#: pmpro-addon-packages.php:368
 #, php-format
 msgid "Purchase this Content (%s)"
 msgstr ""
@@ -85,6 +91,7 @@ msgstr ""
 #: pmpro-addon-packages.php:295
 #: pmpro-addon-packages.php:322
 #: pmpro-addon-packages.php:326
+#: pmpro-addon-packages.php:370
 #, php-format
 msgid "This content requires that you purchase additional access. The price is %s."
 msgstr ""
@@ -99,6 +106,7 @@ msgstr ""
 #: pmpro-addon-packages.php:495
 #: pmpro-addon-packages.php:504
 #: pmpro-addon-packages.php:508
+#: pmpro-addon-packages.php:579
 #, php-format
 msgid " + access to %s"
 msgstr ""
@@ -109,6 +117,7 @@ msgstr ""
 #: pmpro-addon-packages.php:692
 #: pmpro-addon-packages.php:706
 #: pmpro-addon-packages.php:710
+#: pmpro-addon-packages.php:876
 msgid " membership level"
 msgstr ""
 
@@ -118,6 +127,7 @@ msgstr ""
 #: pmpro-addon-packages.php:693
 #: pmpro-addon-packages.php:707
 #: pmpro-addon-packages.php:711
+#: pmpro-addon-packages.php:877
 msgid "You are purchasing additional access to:"
 msgstr ""
 
@@ -127,6 +137,7 @@ msgstr ""
 #: pmpro-addon-packages.php:693
 #: pmpro-addon-packages.php:707
 #: pmpro-addon-packages.php:711
+#: pmpro-addon-packages.php:877
 msgid "You have selected the"
 msgstr ""
 
@@ -136,6 +147,7 @@ msgstr ""
 #: pmpro-addon-packages.php:714
 #: pmpro-addon-packages.php:728
 #: pmpro-addon-packages.php:732
+#: pmpro-addon-packages.php:898
 msgid "The price"
 msgstr ""
 
@@ -145,6 +157,7 @@ msgstr ""
 #: pmpro-addon-packages.php:714
 #: pmpro-addon-packages.php:728
 #: pmpro-addon-packages.php:732
+#: pmpro-addon-packages.php:898
 msgid "The price for membership"
 msgstr ""
 
@@ -154,6 +167,7 @@ msgstr ""
 #: pmpro-addon-packages.php:715
 #: pmpro-addon-packages.php:729
 #: pmpro-addon-packages.php:733
+#: pmpro-addon-packages.php:899
 msgid " now"
 msgstr ""
 
@@ -163,6 +177,7 @@ msgstr ""
 #: pmpro-addon-packages.php:765
 #: pmpro-addon-packages.php:779
 #: pmpro-addon-packages.php:783
+#: pmpro-addon-packages.php:949
 #, php-format
 msgid "Continue on to %s."
 msgstr ""
@@ -174,6 +189,7 @@ msgstr ""
 #: pmpro-addon-packages.php:873
 #: pmpro-addon-packages.php:887
 #: pmpro-addon-packages.php:891
+#: pmpro-addon-packages.php:1057
 msgid "Purchased Addon Packages"
 msgstr ""
 
@@ -183,6 +199,7 @@ msgstr ""
 #: pmpro-addon-packages.php:890
 #: pmpro-addon-packages.php:904
 #: pmpro-addon-packages.php:908
+#: pmpro-addon-packages.php:1074
 #, php-format
 msgid "[Deleted Post with ID#%s]"
 msgstr ""
@@ -194,6 +211,7 @@ msgstr ""
 #: pmpro-addon-packages.php:895
 #: pmpro-addon-packages.php:909
 #: pmpro-addon-packages.php:913
+#: pmpro-addon-packages.php:1079
 msgid "remove"
 msgstr ""
 
@@ -204,6 +222,7 @@ msgstr ""
 #: pmpro-addon-packages.php:904
 #: pmpro-addon-packages.php:918
 #: pmpro-addon-packages.php:922
+#: pmpro-addon-packages.php:1088
 msgid "Give this User a Package"
 msgstr ""
 
@@ -221,6 +240,8 @@ msgstr ""
 #: pmpro-addon-packages.php:937
 #: pmpro-addon-packages.php:924
 #: pmpro-addon-packages.php:942
+#: pmpro-addon-packages.php:1090
+#: pmpro-addon-packages.php:1108
 msgid "Enter a post/page ID"
 msgstr ""
 
@@ -231,6 +252,7 @@ msgstr ""
 #: pmpro-addon-packages.php:912
 #: pmpro-addon-packages.php:926
 #: pmpro-addon-packages.php:930
+#: pmpro-addon-packages.php:1096
 msgid "+ Add Another"
 msgstr ""
 
@@ -241,6 +263,7 @@ msgstr ""
 #: pmpro-addon-packages.php:1036
 #: pmpro-addon-packages.php:1050
 #: pmpro-addon-packages.php:1065
+#: pmpro-addon-packages.php:1231
 msgid "Docs"
 msgstr ""
 
@@ -251,6 +274,7 @@ msgstr ""
 #: pmpro-addon-packages.php:1036
 #: pmpro-addon-packages.php:1050
 #: pmpro-addon-packages.php:1065
+#: pmpro-addon-packages.php:1231
 msgid "View Documentation"
 msgstr ""
 
@@ -261,6 +285,7 @@ msgstr ""
 #: pmpro-addon-packages.php:1037
 #: pmpro-addon-packages.php:1051
 #: pmpro-addon-packages.php:1066
+#: pmpro-addon-packages.php:1232
 msgid "Support"
 msgstr ""
 
@@ -271,6 +296,7 @@ msgstr ""
 #: pmpro-addon-packages.php:1037
 #: pmpro-addon-packages.php:1051
 #: pmpro-addon-packages.php:1066
+#: pmpro-addon-packages.php:1232
 msgid "Visit Customer Support Forum"
 msgstr ""
 
@@ -325,11 +351,13 @@ msgstr ""
 
 #: pmpro-addon-packages.php:280
 #: pmpro-addon-packages.php:284
+#: pmpro-addon-packages.php:328
 msgid "Purchase Required"
 msgstr ""
 
 #: pmpro-addon-packages.php:323
 #: pmpro-addon-packages.php:327
+#: pmpro-addon-packages.php:371
 msgid "Click Here to Check Out"
 msgstr ""
 
@@ -337,6 +365,7 @@ msgstr ""
 #: pmpro-addon-packages.php:796
 #: pmpro-addon-packages.php:810
 #: pmpro-addon-packages.php:814
+#: pmpro-addon-packages.php:980
 #, php-format
 msgid "(Access expires on %s)"
 msgstr ""
@@ -345,6 +374,7 @@ msgstr ""
 #: pmpro-addon-packages.php:847
 #: pmpro-addon-packages.php:861
 #: pmpro-addon-packages.php:865
+#: pmpro-addon-packages.php:1031
 msgid "Additional Access"
 msgstr ""
 
@@ -352,6 +382,12 @@ msgstr ""
 #: pmpro-addon-packages.php:854
 #: pmpro-addon-packages.php:868
 #: pmpro-addon-packages.php:872
+#: pmpro-addon-packages.php:1038
 #, php-format
 msgid "Expires on %s"
+msgstr ""
+
+#: pmpro-addon-packages.php:598
+#: pmpro-addon-packages.php:615
+msgid "The content you are trying to purchase is not available."
 msgstr ""
