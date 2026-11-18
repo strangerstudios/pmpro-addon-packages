@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce
 Requires at least: 5.2
 Tested up to: 7.1
-Stable tag: 0.9.3
+Stable tag: 0.9.4
 
 Allow PMPro members to purchase access to specific pages. This plugin is meant to be a temporary solution until support for multiple membership levels is added to PMPro.
 
@@ -59,6 +59,14 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 Please Note: This plugin is meant as a temporary solution. Most updates and fixes will be reserved for when this functionality is built into Paid Memberships Pro. We may not fix the pmpro-addon-packages plugin itself unless it is critical.
 
 == Changelog ==
+= 0.9.4 - 2026-11-18 =
+* ENHANCEMENT: Checkout links that pass only ?ap= now pick a membership level that unlocks the Addon Package, instead of the site's default level. #76 (@dparker1005)
+* ENHANCEMENT: Users with the pmpro_membershiplevels capability can now set Addon Package prices. Developers can change the required capability with the new `pmproap_edit_price_capability` filter. #77 (@dparker1005)
+* BUG FIX: Fixed an issue where currency symbols or letters in an Addon Package price were saved and could break checkout. #77 (@dparker1005)
+* BUG FIX: Fixed an issue where every page loaded with an ?ap= parameter was treated as the Checkout page when the Checkout page setting was empty. #78 (@dparker1005)
+* BUG FIX: Fixed an issue where the ap checkout parameter could point at any post, not just an Addon Package. Checkout now shows an error when the link isn't for a published Addon Package with a price. #79 (@dparker1005)
+* BUG FIX: Fixed an issue where buying a membership level together with an Addon Package, or through a required free level, kept the member's previous subscription active and billing. The previous subscription is now only kept when buying a package for a level the member already has. #80 (@dparker1005)
+
 = 0.9.3 - 2026-09-28 =
 * SECURITY: Now requiring the administrator capability and a nonce to save Addon Package assignments from the user profile screen. #75 (@dparker1005)
 * SECURITY: Prepared SQL queries, sanitized request values, and escaped output flagged by Plugin Check. #74 (@dparker1005)

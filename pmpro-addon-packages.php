@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro - Addon Packages
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-purchase-access-to-a-single-page/
  * Description: Sell members-only access to individual pages or posts, or sell a la carte items for a flat fee.
- * Version: 0.9.3
+ * Version: 0.9.4
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: pmpro-addon-packages
@@ -68,7 +68,7 @@ function pmproap_post_meta() {
 /**
  * Check whether the current user can set the Addon Package price for posts.
  *
- * @since TBD
+ * @since 0.9.4
  *
  * @return bool
  */
@@ -77,7 +77,7 @@ function pmproap_current_user_can_edit_price() {
 	 * Filter the capability needed to set the Addon Package price for posts.
 	 * Users with manage_options can always set the price.
 	 *
-	 * @since TBD
+	 * @since 0.9.4
 	 *
 	 * @param string $capability The capability to check. Default 'pmpro_membershiplevels'.
 	 */
@@ -667,7 +667,7 @@ add_filter( 'pmpro_cancel_previous_subscriptions', 'pmproap_pmpro_cancel_previou
  * This can't be decided inside pmpro_cancel_previous_subscriptions: by then core has already
  * marked the held level's row "changed". Uses the checkout's user, so webhooks work too.
  *
- * @since TBD
+ * @since 0.9.4
  *
  * @param int    $user_id The user checking out.
  * @param object $morder  The checkout order.
@@ -697,7 +697,7 @@ add_action( 'pmpro_checkout_before_change_membership_level', 'pmproap_pmpro_chec
  * Forget the package-only decision once the checkout's own membership change is done.
  * Other membership changes in the same request (e.g. made by another Add On) don't count.
  *
- * @since TBD
+ * @since 0.9.4
  *
  * @param int $level_id The level the user was changed to.
  * @param int $user_id  The user whose membership changed.
@@ -715,7 +715,7 @@ add_action( 'pmpro_after_change_membership_level', 'pmproap_clear_package_only_c
 /**
  * Also forget it after the checkout, in case the level change didn't report it.
  *
- * @since TBD
+ * @since 0.9.4
  *
  * @param int    $user_id The user who checked out.
  * @param object $morder  The checkout order.
