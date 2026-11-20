@@ -599,6 +599,17 @@ function pmproap_pmpro_checkout_checks( $continue ) {
 		$continue = false;
 	}
 
+	// The checkout level must be one of the package's required levels, or the member pays but can't view the content.
+	if ( $continue && ! empty( $_REQUEST['ap'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See above.
+		$checkout_level = pmpro_getLevelAtCheckout();
+		$has_access     = pmpro_has_membership_access( intval( $_REQUEST['ap'] ), null, true ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See above.
+		$post_levels    = empty( $has_access[1] ) ? array() : array_map( 'intval', $has_access[1] );
+		if ( empty( $checkout_level->id ) || ! in_array( (int) $checkout_level->id, $post_levels, true ) ) {
+			pmpro_setMessage( __( 'The content you are trying to purchase is not available for this membership level.', 'pmpro-addon-packages' ), 'pmpro_error' );
+			$continue = false;
+		}
+	}
+
 	return $continue;
 }
 add_filter( 'pmpro_checkout_checks', 'pmproap_pmpro_checkout_checks' );
