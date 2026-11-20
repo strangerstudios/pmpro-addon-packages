@@ -55,7 +55,7 @@ function pmproap_post_meta() {
 	<?php } elseif ( $pmproap_price ) { ?>
 		<p><strong class="pmpro_green"><?php esc_html_e( 'This page is restricted.', 'pmpro-addon-packages' ); ?></strong> <?php printf( esc_html__( 'Members will have to pay %s to gain access to this page. To open access to all members, delete the price below then Save/Update this post.', 'pmpro-addon-packages' ), wp_kses_post( pmpro_formatPrice( $pmproap_price ) ) ); ?></p>
 	<?php } else { ?>
-		<p><?php esc_html_e( 'To charge for access to this post and any subpages, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.', 'pmpro-addon-packages' ); ?></p>
+		<p><?php esc_html_e( 'To charge for access to this post, set a price below then Save/Update this post. Only members of the levels set in the "Require Membership" sidebar will be able to purchase access to this post.', 'pmpro-addon-packages' ); ?></p>
 	<?php } ?>
 
 	<div>
