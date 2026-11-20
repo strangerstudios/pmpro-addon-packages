@@ -112,6 +112,18 @@ function pmproap_post_save( $post_id ) {
 	// OK, we're authenticated: we need to find and save the data
 	if ( isset( $_POST['pmproap_price'] ) ) {
 		$mydata = preg_replace( '/[^0-9.,]/', '', sanitize_text_field( $_POST['pmproap_price'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Saved with update_post_meta(), which unslashes.
+
+		// Save a plain number so the price isn't cut off at the comma when charged.
+		if ( preg_match( '/^\d{1,3}(,\d{3})+(\.\d+)?$/', $mydata ) ) {
+			// Comma thousands separator: 1,000 or 1,000.50.
+			$mydata = str_replace( ',', '', $mydata );
+		} elseif ( preg_match( '/^\d{1,3}(\.\d{3})+,\d{1,2}$/', $mydata ) ) {
+			// Period thousands separator with comma decimal: 1.000,50.
+			$mydata = str_replace( array( '.', ',' ), array( '', '.' ), $mydata );
+		} elseif ( preg_match( '/^\d+,\d{1,2}$/', $mydata ) ) {
+			// Comma decimal separator: 9,99.
+			$mydata = str_replace( ',', '.', $mydata );
+		}
 		update_post_meta( $post_id, '_pmproap_price', $mydata );
 		return $mydata;
 	}
