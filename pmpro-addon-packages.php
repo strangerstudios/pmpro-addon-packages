@@ -237,9 +237,10 @@ function pmproap_hasAccess( $user_id, $post_id ) {
 		return true;    // user has one of the all access levels
 	}
 
-	// check for expiration date
+	// check for expiration date. Packages without a stored date (e.g. bought before PMPROAP_EXP_DAYS was set) don't expire.
 	if ( defined( 'PMPROAP_EXP_DAYS' ) && PMPROAP_EXP_DAYS ) {
-		if ( strtotime( 'now' ) >= get_user_meta( $user_id, 'pmproap_post_id_' . $post_id . '_exp_date', true ) ) {
+		$exp_date = get_user_meta( $user_id, 'pmproap_post_id_' . $post_id . '_exp_date', true );
+		if ( ! empty( $exp_date ) && strtotime( 'now' ) >= $exp_date ) {
 			pmproap_removeMemberFromPost( $user_id, $post_id );
 			delete_user_meta( $user_id, 'pmproap_post_id_' . $post_id . '_exp_date' );
 			return false;
