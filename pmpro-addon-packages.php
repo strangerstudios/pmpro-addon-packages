@@ -525,11 +525,16 @@ function pmproap_pmpro_updated_order_paypal( $order ) {
 	}
 
 	if ( ( $order->status == 'success' ) && in_array( $order->gateway, $gateways ) && ( strpos( $order->notes, 'Addon Package:' ) !== false ) ) {
+		// Only give access once per order. Later saves of the same order shouldn't re-add removed access or reset its expiration.
+		if ( get_pmpro_membership_order_meta( $order->id, 'pmproap_access_granted', true ) ) {
+			return;
+		}
 
 		preg_match( '/Addon Package:(.*)\(#(\d+)\)/', $order->notes, $matches );
 		$pmproap_ap = $matches[2];
 		if ( ! empty( $pmproap_ap ) ) {
 			pmproap_addMemberToPost( $order->user_id, $pmproap_ap );
+			update_pmpro_membership_order_meta( $order->id, 'pmproap_access_granted', $pmproap_ap );
 		}
 	}
 }
